@@ -1,0 +1,31 @@
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
+
+def get_db_connection():
+    """Establishes a connection to MongoDB and returns the database object."""
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+    try:
+        # Send a ping to confirm a successful connection
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+        return client.TaskWeaverDB
+    except Exception as e:
+        print(e)
+        return None
+
+def create_database(db):
+    """Creates the database by creating a dummy collection and inserting a document."""
+    if db is not None:
+        # This will create the 'TaskWeaverDB' database and a 'dummy' collection
+        # if they don't already exist.
+        db.dummy_collection.insert_one({"status": "initialized"})
+        print(f"Database '{db.name}' and a dummy collection have been created.")
+
+db = get_db_connection()
+create_database(db)
