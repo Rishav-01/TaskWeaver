@@ -382,7 +382,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Top Participants */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Top Participants</CardTitle>
         </CardHeader>
@@ -417,7 +417,7 @@ export default function ReportsPage() {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

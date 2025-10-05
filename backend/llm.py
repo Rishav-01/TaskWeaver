@@ -36,18 +36,12 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import AIMessage, HumanMessage
-from pydantic import BaseModel
-from typing import List, Union
+from schemas.index import MeetingSummary
 from langchain.output_parsers import PydanticOutputParser
 
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-class MeetingSummary(BaseModel):
-    summary: str
-    action_items: List[str]
-    key_points: List[str]
 
 llm = ChatGroq(api_key = GROQ_API_KEY, model = 'llama-3.3-70b-versatile').with_structured_output(MeetingSummary)
 parser = PydanticOutputParser(pydantic_object = MeetingSummary)
