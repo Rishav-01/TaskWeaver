@@ -48,7 +48,7 @@ parser = PydanticOutputParser(pydantic_object = MeetingSummary)
 format_instructions = parser.get_format_instructions()
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, provide a concise summary, a list of action items, and the key points discussed. Please format your response as a JSON object that strictly follows this schema:\n\n{format_instructions}"),
+    ("system", "You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, provide a concise summary, a list of action items, and the key points discussed. Also, mention all the participants in the meeting using transcript. Please format your response as a JSON object that strictly follows this schema:\n\n{format_instructions}"),
     ("human", "{input}"),
 ]).partial(format_instructions=format_instructions)
 

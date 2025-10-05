@@ -8,3 +8,4 @@ class MeetingSummary(BaseModel):
     summary: str
     action_items: List[str]
     key_points: List[str]
+    participants: List[str]
