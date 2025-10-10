@@ -22,10 +22,13 @@ def get_db_connection():
 def create_database(db):
     """Creates the database by creating a dummy collection and inserting a document."""
     if db is not None:
-        # This will create the 'TaskWeaverDB' database and a 'dummy' collection
-        # if they don't already exist.
-        db.dummy_collection.insert_one({"status": "initialized"})
-        print(f"Database '{db.name}' and a dummy collection have been created.")
+        # This will create the 'TaskWeaverDB' database and collections if they don't already exist.
+        if "User" not in db.list_collection_names():
+            db.create_collection("User")
+        if "Meeting" not in db.list_collection_names():
+            db.create_collection("Meeting")
+        if "ActionItem" not in db.list_collection_names():
+            db.create_collection("ActionItem")
 
 db = get_db_connection()
 create_database(db)
