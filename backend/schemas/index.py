@@ -5,6 +5,7 @@ class MeetingTranscript(BaseModel):
     transcript: str
 
 class MeetingSummary(BaseModel):
+    title: str
     summary: str
     action_items: List[str]
     key_points: List[str]
