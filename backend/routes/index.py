@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2AuthorizationCodeBearer
 from llm import call_chain
 from models.Meeting import Meeting
-from models.User import Token, User
+from models.User import User
+from schemas.index import Token
 from services.index import create_meeting
 from datetime import datetime, timedelta
 from auth import (
@@ -25,7 +26,7 @@ async def register_user(user: User):
     # Call the service to create the user
     created_user_response = create_user(user)
     
-    return created_user_response
+    return {"message": "User created successfully", "data": created_user_response}
 
 
 @router.post("/token", response_model=Token)
