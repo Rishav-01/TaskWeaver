@@ -1,8 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from llm import call_chain
 from models.Meeting import Meeting
+from models.User import Token, User
 from services.index import create_meeting
-from datetime import datetime
+from datetime import datetime, timedelta
+from auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    create_access_token,
+    get_current_user,
+    get_user_by_email,
+    verify_password, create_user
+)
 
 router = APIRouter()
 
@@ -10,8 +19,30 @@ router = APIRouter()
 async def root():
     return {"message": "Hello World"}
 
+@router.post("/register")
+async def register_user(user: User):
+    """Registers a new user."""
+    # Call the service to create the user
+    created_user_response = create_user(user)
+    
+    return created_user_response
+
+
+@router.post("/token", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = get_user_by_email(form_data.username)
+    if not user or not verify_password(form_data.password, user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": user["email"]}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @router.post('/upload-meeting')
-async def upload_meeting(transcript_content: str):
+async def upload_meeting(transcript_content: str, current_user: User = Depends(get_current_user)):
     """Accepts a meeting transcript and returns a structured summary."""
     summary_dict = call_chain(transcript_content) # Pass the plain string directly to call_chain
 
@@ -25,7 +56,7 @@ async def upload_meeting(transcript_content: str):
             date=datetime.now(),
             duration=summary_dict.duration,
             title=summary_dict.title,
-            user_id='user123',
+            user_id=current_user.email, # Use authenticated user's email
             status='completed',
             start_time=summary_dict.start_time,
             end_time=summary_dict.end_time

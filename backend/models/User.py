@@ -6,3 +6,10 @@ class User(BaseModel):
     last_name: Optional[str] = None
     email: EmailStr
     password: str
+
+class UserInDB(User):
+    hashed_password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
