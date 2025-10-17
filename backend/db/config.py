@@ -7,7 +7,7 @@ load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 
-def get_db_connection():
+def get_db_connection() -> MongoClient:
     """Establishes a connection to MongoDB and returns the database object."""
     client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
     try:
@@ -27,8 +27,6 @@ def create_database(db):
             db.create_collection("User")
         if "Meeting" not in db.list_collection_names():
             db.create_collection("Meeting")
-        if "ActionItem" not in db.list_collection_names():
-            db.create_collection("ActionItem")
 
 db = get_db_connection()
 create_database(db)

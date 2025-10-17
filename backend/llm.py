@@ -1,41 +1,7 @@
-
-# prompt = ChatPromptTemplate.from_messages([
-#     ("system", "You are a helpful meeting summarizer and analyst agent which will be recieving transcripts of meetings and will be expected to summarize and analyze the meetings, also answering questions about the meetings, and setting up action items based on the meetings."),
-#     ("human", "{input}"),
-# ])
-
-# chain = prompt | llm
-
-
-# Chat history enabled
-
-# prompt = ChatPromptTemplate.from_messages([
-#     ("system", "You are a helpful assistant that answer the questions. Also, you will be provided with chat history of the conversation so far. Use them when needed only."),
-#     MessagesPlaceholder(variable_name="chat_history"),
-#     ("human", "{input}"),
-# ])
-
-# chain = prompt | llm
-
-# Add the ability to store and recall chat history of the last 6 messages in call_chain function
-# def call_chain(query: str, chat_history: list[tuple[str, str]]) -> str:
-#   # convert tuple history into list[BaseMessage] expected by MessagesPlaceholder
-#   messages = []
-#   for user_msg, assistant_msg in chat_history:
-#     messages.append(HumanMessage(content=user_msg))
-#     messages.append(AIMessage(content=assistant_msg))
-
-#   response = chain.invoke({"input": query, "chat_history": messages})
-#   chat_history.append((query, response.content))
-#   if len(chat_history) > 6:
-#     chat_history.pop(0)
-#   return response
-
 import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.schema import AIMessage, HumanMessage
+from langchain.prompts import ChatPromptTemplate
 from schemas.index import MeetingSummary
 from langchain.output_parsers import PydanticOutputParser
 
@@ -46,16 +12,17 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 llm = ChatGroq(api_key = GROQ_API_KEY, model = 'llama-3.3-70b-versatile').with_structured_output(MeetingSummary)
 parser = PydanticOutputParser(pydantic_object = MeetingSummary)
 format_instructions = parser.get_format_instructions()
+prompt_message = f"You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, give it a title, provide a brif summary, a list of action items according to their prority and their assignment to which participant, also the action items should have priority as high, medium and low, the status of action items include -> pending, in-progress, completed and the key points discussed. Also, mention all the participants in the meeting along with the total time elapsed in minutes (Eg -> 120, 70) and also give start time and end time of the meeting using transcript. Please format your response as a JSON object that strictly follows this schema:\n\n {format_instructions}\n\n"
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, five it a title, provide a concise summary, a list of action items, and the key points discussed. Also, mention all the participants in the meeting using transcript. Please format your response as a JSON object that strictly follows this schema:\n\n{format_instructions}"),
+    ("system", "{prompt_message}"),
     ("human", "{input}"),
-]).partial(format_instructions=format_instructions)
+])
 
 chain = prompt | llm
 
 def call_chain(query: str) -> MeetingSummary:
-  response = chain.invoke({"input": query})
+  response = chain.invoke({"input": query, "prompt_message": prompt_message})
   return response
 
 if __name__ == "__main__":
