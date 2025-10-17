@@ -29,3 +29,13 @@ class CreatedMeeting(BaseModel):
     duration: int
     user_id: str
     status: str
+
+class CreatedUserResponse(BaseModel):
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

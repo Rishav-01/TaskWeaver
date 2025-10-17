@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from pymongo.database import Database, Collection
 from dotenv import load_dotenv
 import os
 
@@ -7,7 +8,7 @@ load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 
-def get_db_connection() -> MongoClient:
+def get_db_connection() -> Database:
     """Establishes a connection to MongoDB and returns the database object."""
     client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
     try:
@@ -28,5 +29,12 @@ def create_database(db):
         if "Meeting" not in db.list_collection_names():
             db.create_collection("Meeting")
 
-db = get_db_connection()
-create_database(db)
+db: Database = get_db_connection()
+if db:
+    create_database(db)
+    # Create typed collection objects for better autocompletion
+    user_collection: Collection = db.get_collection("User")
+    meeting_collection: Collection = db.get_collection("Meeting")
+else:
+    user_collection = None
+    meeting_collection = None

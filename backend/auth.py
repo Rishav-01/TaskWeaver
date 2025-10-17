@@ -7,7 +7,8 @@ from pwdlib import PasswordHash
 from pymongo.errors import DuplicateKeyError
 from models.User import User, UserInDB
 from services.index import get_user_by_email
-from db.config import db
+from schemas.index import CreatedUserResponse
+from db.config import user_collection
 from dotenv import load_dotenv
 import os
 
@@ -15,7 +16,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Use passlib.CryptContext directly for more control
@@ -27,9 +28,14 @@ def get_password_hash(password: str) -> str:
     """
     return pwd_context.hash(password)
 
-def create_user(user: User):
+def create_user(user: User) -> CreatedUserResponse:
     """Hashes the user's password and saves them to the database."""
     try:
+        # Check if this email is already registered
+        existing_user = user_collection.find_one({"email": user.email})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+
         # Hash the password directly here
         hashed_password = get_password_hash(user.password)
         user_in_db = UserInDB(**user.model_dump(), hashed_password=hashed_password)
@@ -39,13 +45,13 @@ def create_user(user: User):
         # The UserInDB model has 'hashed_password', but the DB expects 'password'
         user_dict['password'] = user_dict.pop('hashed_password')
         
-        result = db.User.insert_one(user_dict)
+        result = user_collection.insert_one(user_dict)
         
         # Prepare the response object, excluding the password
         user_dict.pop("password")
         user_dict["id"] = str(result.inserted_id)
         user_dict.pop("_id", None)
-        return {"message": "User created successfully", "user": user_dict}
+        return user_dict
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Email already registered")
     
