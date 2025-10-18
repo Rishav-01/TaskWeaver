@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2AuthorizationCodeB
 from llm import call_chain
 from models.Meeting import Meeting
 from models.User import User
-from schemas.index import Token
+from schemas.index import Token, UserLoginModel
 from services.index import create_meeting
 from datetime import datetime, timedelta
 from auth import (
@@ -27,6 +27,22 @@ async def register_user(user: User):
     created_user_response = create_user(user)
     
     return {"message": "User created successfully", "data": created_user_response}
+
+@router.post("/login")
+async def login_user(user: UserLoginModel):
+    """Logs in a user and returns an access token."""
+    db_user = get_user_by_email(user.email)
+    if not db_user or not verify_password(user.password, db_user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": db_user["email"]}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/token", response_model=Token)
