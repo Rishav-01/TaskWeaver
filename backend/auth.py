@@ -19,7 +19,6 @@ ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Use passlib.CryptContext directly for more control
 pwd_context = PasswordHash.recommended()
 
 def get_password_hash(password: str) -> str:
