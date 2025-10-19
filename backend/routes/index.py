@@ -20,15 +20,18 @@ router = APIRouter()
 async def root():
     return {"message": "Hello World"}
 
-@router.post("/register")
+@router.post("/register", response_model=Token)
 async def register_user(user: User):
     """Registers a new user."""
     # Call the service to create the user
     created_user_response = create_user(user)
-    
-    return {"message": "User created successfully", "data": created_user_response}
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": created_user_response["email"]}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/login")
+@router.post("/login", response_model=Token)
 async def login_user(user: UserLoginModel):
     """Logs in a user and returns an access token."""
     db_user = get_user_by_email(user.email)
@@ -42,20 +45,6 @@ async def login_user(user: UserLoginModel):
     access_token = create_access_token(
         data={"sub": db_user["email"]}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = get_user_by_email(form_data.username)
-    if not user or not verify_password(form_data.password, user["password"]):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user["email"]}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post('/upload-meeting')
