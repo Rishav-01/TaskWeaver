@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2AuthorizationCodeBearer
+from fastapi.security import OAuth2PasswordRequestForm
 from llm import call_chain
 from models.Meeting import Meeting
 from models.User import User

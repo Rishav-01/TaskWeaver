@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pymongo.errors import DuplicateKeyError
 from models.User import User, UserInDB
@@ -87,7 +88,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-    except JWTError: # Catches errors from python-jose
+    except InvalidTokenError:
         raise credentials_exception
 
     user = get_user_by_email(email=email)
