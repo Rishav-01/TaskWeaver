@@ -29,7 +29,7 @@ async def register_user(user: User):
     access_token = create_access_token(
         data={"sub": created_user_response["email"]}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"token": access_token, "token_type": "bearer"}
 
 @router.post("/login", response_model=Token)
 async def login_user(user: UserLoginModel):
@@ -45,7 +45,7 @@ async def login_user(user: UserLoginModel):
     access_token = create_access_token(
         data={"sub": db_user["email"]}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"token": access_token, "token_type": "bearer"}
 
 @router.post('/upload-meeting')
 async def upload_meeting(transcript_content: str, current_user: User = Depends(get_current_user)):

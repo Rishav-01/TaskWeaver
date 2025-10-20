@@ -1,17 +1,39 @@
+"use client";
+
 import { Label } from "@radix-ui/react-label";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Bot, Chrome } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
-
-interface LoginFormProps {
-  setAuthTab: Dispatch<SetStateAction<"login" | "signup">>;
-}
+import { useAuth } from "@/hooks/useAuth";
+import { LoginFormProps } from "@/types/loginFormTypes";
+import { Snackbar } from "../common/Snackbar";
+import { useRouter } from "next/navigation";
 
 const LoginForm = ({ setAuthTab }: LoginFormProps) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    try {
+      setIsLoading(true);
+      await login({ email, password });
+      Snackbar.success("Logged in successfully!");
+      router.push("/dashboard");
+    } catch (error) {
+      Snackbar.error("Login failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="lg:p-8">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -48,14 +70,33 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="name@example.com" type="email" />
+                <Input
+                  id="email"
+                  placeholder="name@example.com"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" />
+                <Input
+                  id="password"
+                  placeholder="********"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
-              <Button className="w-full" asChild>
-                <Link href="/dashboard">Sign In</Link>
+              <Button
+                className={`w-full cursor-pointer hover:opacity-80 ${
+                  isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+                asChild
+                onClick={handleLogin}
+                disabled={isLoading}
+              >
+                <p>Sign In</p>
               </Button>
             </div>
 

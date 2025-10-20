@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.index import router
 
 app = FastAPI(title="TaskWeaver API")
-cors_origins = ["http://localhost:5173"]
+cors_origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,

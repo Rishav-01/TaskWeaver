@@ -37,7 +37,7 @@ class CreatedUserResponse(BaseModel):
     last_name: str
 
 class Token(BaseModel):
-    access_token: str
+    token: str
     token_type: str
 
 class UserLoginModel(BaseModel):
