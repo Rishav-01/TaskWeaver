@@ -1,4 +1,4 @@
-import { LoginData, LoginDataResponse, SignupData } from "@/types/authType";
+import { LoginData, SignupData } from "@/types/authType";
 
 class AuthService {
   private VITE_API_URL: string = "http://localhost:8000";
@@ -40,6 +40,27 @@ class AuthService {
       throw error;
     }
   }
+
+  verifyToken = async (token: string) => {
+    try {
+      const response = await fetch(`${this.VITE_API_URL}/users/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        // This will be caught by the .catch block
+        throw new Error("Token verification failed");
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error("An error occurred during token verification.");
+    }
+  };
 }
 
 export const authService = new AuthService();
