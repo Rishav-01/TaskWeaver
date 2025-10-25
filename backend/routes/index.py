@@ -105,5 +105,4 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 @router.get('/meetings')
 async def get_meetings(current_user: User = Depends(get_current_user)):
     """Retrieves all meetings for the authenticated user."""
-    print("current", current_user)
     return {"meetings": "meetings"}
