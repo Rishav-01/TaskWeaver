@@ -29,7 +29,25 @@ async def register_user(user: User):
     access_token = create_access_token(
         data={"sub": created_user_response["email"]}, expires_delta=access_token_expires
     )
+    return {"token": access_token, "token_type": "bearer"}
+
+# Token endpoint for OAuth2PasswordBearer swagger purpose
+@router.post("/token")
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """Logs in a user and returns an access token."""
+    user = get_user_by_email(form_data.username)
+    if not user or not verify_password(form_data.password, user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["email"]}, expires_delta=access_token_expires
+    )
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @router.post("/login", response_model=Token)
 async def login_user(user: UserLoginModel):
@@ -45,7 +63,7 @@ async def login_user(user: UserLoginModel):
     access_token = create_access_token(
         data={"sub": db_user["email"]}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"token": access_token, "token_type": "bearer"}
 
 @router.post('/upload-meeting')
 async def upload_meeting(transcript_content: str, current_user: User = Depends(get_current_user)):
@@ -78,3 +96,14 @@ async def upload_meeting(transcript_content: str, current_user: User = Depends(g
             return {"error": "Failed to create and retrieve meeting", "success": False}
     except Exception as e:
         return {"error": str(e)}
+
+@router.get('/users/me', response_model=User)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    """Retrieves the current authenticated user's information."""
+    return current_user
+
+@router.get('/meetings')
+async def get_meetings(current_user: User = Depends(get_current_user)):
+    """Retrieves all meetings for the authenticated user."""
+    print("current", current_user)
+    return {"meetings": "meetings"}

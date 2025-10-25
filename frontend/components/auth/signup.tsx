@@ -1,3 +1,5 @@
+"use-client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,13 +7,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Bot, Chrome } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
-
-interface SignUpFormProps {
-  setAuthTab: Dispatch<SetStateAction<"login" | "signup">>;
-}
+import { SignUpFormProps } from "@/types/loginFormTypes";
+import { Snackbar } from "../common/Snackbar";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formSchema, SignupData } from "@/types/authType";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupData>({
+    resolver: zodResolver(formSchema),
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const { signup } = useAuth();
+
+  const onSubmit: SubmitHandler<SignupData> = async (data) => {
+    try {
+      setIsLoading(true);
+      await signup(data);
+      Snackbar.success("Account created successfully !");
+      router.push("/dashboard");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred.";
+      Snackbar.error(`Sign up failed: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container relative flex min-h-screen flex-col items-center justify-center">
@@ -46,31 +78,65 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="John Doe" />
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      placeholder="John"
+                      {...register("first_name")}
+                    />
+                    {errors.first_name && (
+                      <p className="text-xs text-red-500">
+                        {errors.first_name.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Doe"
+                      {...register("last_name")}
+                    />
+                    {errors.last_name && (
+                      <p className="text-xs text-red-500">
+                        {errors.last_name.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     placeholder="name@example.com"
-                    type="email"
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-xs text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" />
+                  <Input
+                    id="password"
+                    type="password"
+                    {...register("password")}
+                  />
+                  {errors.password && (
+                    <p className="text-xs text-red-500">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input id="confirmPassword" type="password" />
-                </div>
-                <Button className="w-full" asChild>
-                  <Link href="/dashboard">Create Account</Link>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
-              </div>
+              </form>
 
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
