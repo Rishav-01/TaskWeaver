@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 class ActionItem(BaseModel):
     status: str         # e.g., "pending", "completed", "in-progress"
@@ -25,10 +26,10 @@ class CreatedMeeting(BaseModel):
     action_items: List[ActionItem]
     key_points: List[str]
     participants: List[str]
-    date: str
+    date: datetime
     duration: int
     user_id: str
-    status: str
+    status: str         # pending, in-progress, completed
 
 class CreatedUserResponse(BaseModel):
     id: str

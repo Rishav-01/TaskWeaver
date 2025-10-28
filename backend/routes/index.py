@@ -4,7 +4,7 @@ from llm import call_chain
 from models.Meeting import Meeting
 from models.User import User
 from schemas.index import Token, UserLoginModel
-from services.index import create_meeting
+from services.index import create_meeting, get_meetings_by_user
 from datetime import datetime, timedelta
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -105,4 +105,5 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 @router.get('/meetings')
 async def get_meetings(current_user: User = Depends(get_current_user)):
     """Retrieves all meetings for the authenticated user."""
-    return {"meetings": "meetings"}
+    user_meetings = get_meetings_by_user(current_user.email)
+    return {"message": "Meetings retrieved successfully", "success": True, "data": user_meetings}

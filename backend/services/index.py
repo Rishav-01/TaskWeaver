@@ -24,3 +24,16 @@ def create_meeting(meeting: Meeting) -> CreatedMeeting:
         return created_meeting
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def get_meetings_by_user(user_email: str) ->list[CreatedMeeting]:
+    """Retrieves all meetings for a specific user."""
+    try:
+        meetings_cursor = meeting_collection.find({"user_id": user_email})
+        meetings = []
+        for meeting in meetings_cursor:
+            meeting["id"] = str(meeting["_id"])
+            del meeting["_id"]
+            meetings.append(meeting)
+        return meetings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
