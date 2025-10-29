@@ -19,7 +19,7 @@ class MeetingSummary(BaseModel):
     start_time: str
     end_time: str
 
-class CreatedMeeting(BaseModel):
+class CreatedMeeting(MeetingSummary):
     id: str
     title: str
     summary: str

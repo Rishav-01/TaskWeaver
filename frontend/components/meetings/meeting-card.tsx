@@ -10,15 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-
-interface Meeting {
-  id: string;
-  title: string;
-  date: string;
-  participants: { name: string; avatar?: string }[];
-  status: "completed" | "scheduled" | "in-progress";
-  actionItems: number;
-}
+import { Meeting } from "@/types/meetingsType";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -28,7 +20,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   const statusColors = {
     completed:
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-    scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+    pending: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
     "in-progress":
       "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
   };
@@ -42,7 +34,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           <CardTitle className="text-base">{meeting.title}</CardTitle>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>{meeting.date}</span>
+            <span>{new Date(meeting.date).toLocaleString()}</span>
           </div>
         </div>
         <DropdownMenu>
@@ -52,7 +44,9 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate.push(`meetings/${1}`)}>
+            <DropdownMenuItem
+              onClick={() => navigate.push(`meetings/${meeting.id}`)}
+            >
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem>Edit Meeting</DropdownMenuItem>
@@ -67,7 +61,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           </Badge>
           <div className="flex items-center space-x-1 text-sm text-muted-foreground">
             <FileText className="h-3 w-3" />
-            <span>{meeting.actionItems} action items</span>
+            <span>{meeting.action_items.length} action items</span>
           </div>
         </div>
 
@@ -79,9 +73,9 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
                 key={index}
                 className="h-6 w-6 border-2 border-background"
               >
-                <AvatarImage src={participant.avatar} />
+                {/* <AvatarImage src={participant.avatar} /> */}
                 <AvatarFallback className="text-xs">
-                  {participant.name
+                  {participant
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}

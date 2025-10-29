@@ -4,6 +4,8 @@ import { StatsCard } from "@/components/dashboard/stats-card";
 import { MeetingCard } from "@/components/meetings/meeting-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMeetings } from "@/hooks/useMeetings";
+import { Meeting } from "@/types/meetingsType";
 import {
   Users,
   Calendar,
@@ -85,7 +87,11 @@ const recentMeetings = [
 ];
 
 export default function DashboardPage() {
+  const { meetings, setIsLoadingMeetings, setIsErrorInMeetings, meetingStats } =
+    useMeetings();
+
   const navigate = useRouter();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -103,7 +109,7 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
+        {meetingStats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
@@ -123,7 +129,7 @@ export default function DashboardPage() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentMeetings.map((meeting) => (
+              {meetings.slice(0, 3).map((meeting) => (
                 <MeetingCard key={meeting.id} meeting={meeting} />
               ))}
             </CardContent>

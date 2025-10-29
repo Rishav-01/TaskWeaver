@@ -32,7 +32,8 @@ class AuthService {
         body: JSON.stringify(signupData),
       });
       if (!response.ok) {
-        throw new Error("Signup failed");
+        const errorData = await response.json();
+        throw new Error(errorData.detail);
       }
       localStorage.setItem("token", (await response.json()).token);
     } catch (error) {
