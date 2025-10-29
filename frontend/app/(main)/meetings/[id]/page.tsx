@@ -164,14 +164,6 @@ export default function MeetingDetailPage() {
     }
   }, [meetingId]);
 
-  if (isLoadingMeeting) {
-    return <div>Loading...</div>;
-  }
-
-  if (isErrorinMeeting) {
-    return <div>Error loading meeting details.</div>;
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}

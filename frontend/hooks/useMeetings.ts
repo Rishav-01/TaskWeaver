@@ -53,6 +53,11 @@ export const useMeetings = () => {
   const [isLoadingMeeting, setIsLoadingMeeting] = useState(false);
   const [isErrorinMeeting, setIsErrorInMeeting] = useState<string | null>(null);
 
+  // For uploading a meeting
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedMeeting, setUploadedMeeting] = useState<Meeting | null>(null);
+
   const getMeetings = async () => {
     setIsLoadingMeetings(true);
     try {
@@ -123,6 +128,24 @@ export const useMeetings = () => {
     }
   };
 
+  const uploadMeeting = async (file: File) => {
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const result = await meetingService.uploadMeeting(file);
+      setUploadedMeeting(result.data);
+      // Optionally, refresh the list of meetings after a successful upload
+      await getMeetings();
+      return result.data;
+    } catch (error: any) {
+      setUploadError(
+        error.message || "An unknown error occurred during upload."
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   useEffect(() => {
     getMeetings();
   }, []);
@@ -139,5 +162,9 @@ export const useMeetings = () => {
     meeting,
     isLoadingMeeting,
     isErrorinMeeting,
+    uploadMeeting,
+    isUploading,
+    uploadError,
+    uploadedMeeting,
   };
 };

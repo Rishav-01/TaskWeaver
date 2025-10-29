@@ -40,65 +40,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMeetings } from "@/hooks/useMeetings";
 
-const meetings = [
-  {
-    id: "1",
-    title: "Product Strategy Review",
-    date: "Dec 12, 2024",
-    time: "2:00 PM",
-    participants: [
-      { name: "John Doe", avatar: "" },
-      { name: "Jane Smith", avatar: "" },
-      { name: "Mike Johnson", avatar: "" },
-    ],
-    status: "scheduled",
-    actionItems: 5,
-    duration: "60 min",
-  },
-  {
-    id: "2",
-    title: "Weekly Team Standup",
-    date: "Dec 11, 2024",
-    time: "10:00 AM",
-    participants: [
-      { name: "Alice Brown", avatar: "" },
-      { name: "Bob Wilson", avatar: "" },
-      { name: "Carol Davis", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 3,
-    duration: "30 min",
-  },
-  {
-    id: "3",
-    title: "Client Presentation Prep",
-    date: "Dec 10, 2024",
-    time: "3:30 PM",
-    participants: [
-      { name: "David Lee", avatar: "" },
-      { name: "Emma Taylor", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 7,
-    duration: "90 min",
-  },
-  {
-    id: "4",
-    title: "Budget Planning Q1 2025",
-    date: "Dec 9, 2024",
-    time: "11:00 AM",
-    participants: [
-      { name: "Frank Miller", avatar: "" },
-      { name: "Grace Lee", avatar: "" },
-      { name: "Henry Chen", avatar: "" },
-      { name: "Iris Wang", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 12,
-    duration: "120 min",
-  },
-];
-
 const statusColors = {
   completed:
     "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -111,7 +52,8 @@ export default function MeetingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const { getMeetings, meetings } = useMeetings();
+  const { getMeetings, meetings, isLoadingMeetings, isErrorinMeetings } =
+    useMeetings();
 
   const navigate = useRouter();
 

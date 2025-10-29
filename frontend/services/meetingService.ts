@@ -12,6 +12,12 @@ interface GetMeetingByIdApiResponse {
   data: Meeting;
 }
 
+interface UploadMeetingApiResponse {
+  message: string;
+  success: boolean;
+  data: Meeting;
+}
+
 class MeetingService {
   private VITE_API_URL: string = process.env.NEXT_PUBLIC_API_URL!;
   private token = localStorage.getItem("token");
@@ -62,6 +68,35 @@ class MeetingService {
 
       return await response.json();
     } catch (error) {
+      throw error;
+    }
+  };
+
+  uploadMeeting = async (file: File): Promise<UploadMeetingApiResponse> => {
+    if (!this.token) throw new Error("No token found");
+
+    const fileContent = await file.text();
+
+    try {
+      const response = await fetch(`${this.VITE_API_URL}/upload-meeting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify({ transcript_content: fileContent }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.detail || "Failed to upload and process meeting"
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error uploading meeting:", error);
       throw error;
     }
   };
