@@ -129,9 +129,12 @@ export default function DashboardPage() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {meetings.slice(0, 3).map((meeting) => (
-                <MeetingCard key={meeting.id} meeting={meeting} />
-              ))}
+              {meetings
+                .slice(-4, -1)
+                .reverse()
+                .map((meeting) => (
+                  <MeetingCard key={meeting.id} meeting={meeting} />
+                ))}
             </CardContent>
           </Card>
         </div>
