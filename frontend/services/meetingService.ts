@@ -75,16 +75,16 @@ class MeetingService {
   uploadMeeting = async (file: File): Promise<UploadMeetingApiResponse> => {
     if (!this.token) throw new Error("No token found");
 
-    const fileContent = await file.text();
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
       const response = await fetch(`${this.VITE_API_URL}/upload-meeting`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${this.token}`,
         },
-        body: JSON.stringify({ transcript_content: fileContent }),
+        body: formData,
       });
 
       if (!response.ok) {

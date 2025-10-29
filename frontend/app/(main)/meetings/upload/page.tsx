@@ -27,6 +27,8 @@ import {
   Plus,
   Bot,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Snackbar } from "@/components/common/Snackbar";
 
 const sampleParticipants = [
   { name: "John Doe", email: "john@example.com", role: "Product Manager" },
@@ -41,6 +43,7 @@ export default function UploadMeetingPage() {
   const { uploadMeeting, isUploading } = useMeetings();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const addParticipant = () => {
     setParticipants([...participants, { name: "", email: "", role: "" }]);
@@ -72,9 +75,17 @@ export default function UploadMeetingPage() {
     setIsProcessing(true);
     try {
       await uploadMeeting(uploadedFile);
+
       // Handle success (e.g., show a success message or redirect)
+      Snackbar.success("Meeting uploaded successfully!");
+      router.push("/dashboard");
     } catch (e) {
       // Error is already handled in the hook, but you can add page-specific logic here
+      setError("An error occurred while processing the meeting.");
+      Snackbar.error("An error occurred while processing the meeting.");
+      console.error(e);
+    } finally {
+      setIsProcessing(false);
     }
   };
 

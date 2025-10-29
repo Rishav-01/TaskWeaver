@@ -47,6 +47,7 @@ export const useMeetings = () => {
       trend: { value: "5%", isPositive: false },
     },
   ]);
+  const [averageMeetingTime, setAverageMeetingTime] = useState<number>(0);
 
   // For individual meeting
   const [meeting, setMeeting] = useState<Meeting>();
@@ -107,6 +108,12 @@ export const useMeetings = () => {
           return stat;
         })
       );
+      setAverageMeetingTime(
+        meetingsByUser.data.reduce(
+          (total, meeting) => total + meeting.duration,
+          0
+        ) / meetingsByUser.data.length
+      );
     } catch (error) {
       setIsErrorInMeetings("Failed to fetch meetings");
       throw error;
@@ -166,5 +173,6 @@ export const useMeetings = () => {
     isUploading,
     uploadError,
     uploadedMeeting,
+    averageMeetingTime,
   };
 };

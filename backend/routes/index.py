@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from llm import call_chain
+from utils import extract_text_from_file
 from models.Meeting import Meeting
 from models.User import User
 from schemas.index import Token, UserLoginModel
@@ -66,9 +67,11 @@ async def login_user(user: UserLoginModel):
     return {"token": access_token, "token_type": "bearer"}
 
 @router.post('/upload-meeting')
-async def upload_meeting(transcript_content: str, current_user: User = Depends(get_current_user)):
+async def upload_meeting(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Accepts a meeting transcript and returns a structured summary."""
-    summary_dict = call_chain(transcript_content) # Pass the plain string directly to call_chain
+    transcript_str = await extract_text_from_file(file)
+
+    summary_dict = call_chain(transcript_str)
 
     try:
         # Create a Meeting model instance

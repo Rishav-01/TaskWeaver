@@ -27,7 +27,7 @@ def create_meeting(meeting: Meeting) -> CreatedMeeting:
         raise HTTPException(status_code=500, detail=str(e))
 
 def get_meetings_by_user(user_email: str) ->list[CreatedMeeting]:
-    """Retrieves all meetings for a specific user."""
+    """Retrieves all meetings for a specific user and return the meetings in descending order of their creation"""
     try:
         meetings_cursor = meeting_collection.find({"user_id": user_email})
         meetings = []
@@ -35,6 +35,9 @@ def get_meetings_by_user(user_email: str) ->list[CreatedMeeting]:
             meeting["id"] = str(meeting["_id"])
             del meeting["_id"]
             meetings.append(meeting)
+
+        # Sort meetings in descending order of their creation time
+        meetings.sort(key=lambda x: x["date"], reverse=True)
         return meetings
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
