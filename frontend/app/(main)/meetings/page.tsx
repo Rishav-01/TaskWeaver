@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMeetings } from "@/hooks/useMeetings";
 
 const meetings = [
   {
@@ -109,7 +110,14 @@ const statusColors = {
 export default function MeetingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const { getMeetings, meetings } = useMeetings();
+
   const navigate = useRouter();
+
+  useEffect(() => {
+    getMeetings();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -180,9 +188,11 @@ export default function MeetingsPage() {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <div className="font-medium">{meeting.date}</div>
+                        <div className="font-medium">
+                          {new Date(meeting.date).toLocaleDateString()}
+                        </div>
                         <div className="text-sm text-muted-foreground">
-                          {meeting.time}
+                          {meeting.start_time}
                         </div>
                       </div>
                     </div>
@@ -197,9 +207,9 @@ export default function MeetingsPage() {
                               key={index}
                               className="h-6 w-6 border-2 border-background"
                             >
-                              <AvatarImage src={participant.avatar} />
+                              {/* <AvatarImage src={participant.avatar} /> */}
                               <AvatarFallback className="text-xs">
-                                {participant.name
+                                {participant
                                   .split(" ")
                                   .map((n) => n[0])
                                   .join("")}
@@ -231,7 +241,7 @@ export default function MeetingsPage() {
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <FileText className="h-4 w-4 text-muted-foreground" />
-                      <span>{meeting.actionItems}</span>
+                      <span>{meeting.action_items.length}</span>
                     </div>
                   </TableCell>
                   <TableCell>{meeting.duration}</TableCell>
