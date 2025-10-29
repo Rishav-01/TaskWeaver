@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 
 export const useMeetings = () => {
+  // For all meetings
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [isLoadingMeetings, setIsLoadingMeetings] = useState(true);
+  const [isLoadingMeetings, setIsLoadingMeetings] = useState(false);
   const [isErrorinMeetings, setIsErrorInMeetings] = useState<string | null>(
     null
   );
@@ -46,6 +47,11 @@ export const useMeetings = () => {
       trend: { value: "5%", isPositive: false },
     },
   ]);
+
+  // For individual meeting
+  const [meeting, setMeeting] = useState<Meeting>();
+  const [isLoadingMeeting, setIsLoadingMeeting] = useState(false);
+  const [isErrorinMeeting, setIsErrorInMeeting] = useState<string | null>(null);
 
   const getMeetings = async () => {
     setIsLoadingMeetings(true);
@@ -104,6 +110,19 @@ export const useMeetings = () => {
     }
   };
 
+  const getMeetingById = async (meetingId: string) => {
+    setIsLoadingMeeting(true);
+    try {
+      const meetingById = await meetingService.getMeetingById(meetingId);
+      setMeeting(meetingById.data);
+    } catch (error) {
+      setIsErrorInMeeting("Failed to fetch meeting");
+      throw error;
+    } finally {
+      setIsLoadingMeeting(false);
+    }
+  };
+
   useEffect(() => {
     getMeetings();
   }, []);
@@ -114,5 +133,11 @@ export const useMeetings = () => {
     setIsLoadingMeetings,
     setIsErrorInMeetings,
     meetingStats,
+    isLoadingMeetings,
+    isErrorinMeetings,
+    getMeetingById,
+    meeting,
+    isLoadingMeeting,
+    isErrorinMeeting,
   };
 };
