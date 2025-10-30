@@ -39,56 +39,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useMeetings } from "@/hooks/useMeetings";
 
-const meetings = [
-  {
-    id: "1",
-    title: "Product Strategy Review",
-    date: "2025-12-12",
-    time: "14:00",
-    duration: "90 min",
-    participants: 4,
-    status: "scheduled",
-  },
-  {
-    id: "2",
-    title: "Weekly Standup",
-    date: "2024-12-13",
-    time: "10:00",
-    duration: "30 min",
-    participants: 6,
-    status: "scheduled",
-  },
-  {
-    id: "3",
-    title: "Client Presentation",
-    date: "2024-12-14",
-    time: "15:30",
-    duration: "60 min",
-    participants: 3,
-    status: "scheduled",
-  },
-  {
-    id: "4",
-    title: "Budget Review",
-    date: "2024-12-16",
-    time: "11:00",
-    duration: "120 min",
-    participants: 5,
-    status: "scheduled",
-  },
-  {
-    id: "5",
-    title: "Demo meeting",
-    date: "2025-08-25",
-    time: "11:00",
-    duration: "120 min",
-    participants: 5,
-    status: "scheduled",
-  },
-];
-
 const statusColors = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  pending: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
   completed:
     "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
   "in-progress":
