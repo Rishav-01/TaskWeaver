@@ -18,6 +18,7 @@ class MeetingSummary(BaseModel):
     duration: int  # in minutes
     start_time: str
     end_time: str
+    date: str
 
 class CreatedMeeting(MeetingSummary):
     id: str

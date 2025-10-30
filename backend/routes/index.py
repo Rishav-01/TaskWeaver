@@ -80,7 +80,7 @@ async def upload_meeting(file: UploadFile = File(...), current_user: User = Depe
             action_items=summary_dict.action_items,
             key_points=summary_dict.key_points,
             participants=summary_dict.participants,
-            date=datetime.now(),
+            date=summary_dict.date,
             duration=summary_dict.duration,
             title=summary_dict.title,
             user_id=current_user.email, # Use authenticated user's email

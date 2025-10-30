@@ -11,7 +11,7 @@ export interface Meeting {
   user_id: string;
   title: string;
   summary: string;
-  date: Date;
+  date: string;
   status: "completed" | "pending" | "in-progress";
   start_time: string;
   end_time: string;

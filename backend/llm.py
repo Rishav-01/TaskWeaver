@@ -8,11 +8,12 @@ from langchain.output_parsers import PydanticOutputParser
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+MODEL = os.getenv("MODEL")
 
-llm = ChatGroq(api_key = GROQ_API_KEY, model = 'llama-3.3-70b-versatile').with_structured_output(MeetingSummary)
+llm = ChatGroq(api_key = GROQ_API_KEY, model = MODEL).with_structured_output(MeetingSummary)
 parser = PydanticOutputParser(pydantic_object = MeetingSummary)
 format_instructions = parser.get_format_instructions()
-prompt_message = f"You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, give it a title, provide a brif summary, a list of action items according to their prority and their assignment to which participant, also the action items should have priority as high, medium and low, the status of action items include -> pending, in-progress, completed and the key points discussed. Also, mention all the participants in the meeting along with the total time elapsed in minutes (Eg -> 120, 70) and also give start time and end time of the meeting using transcript. Please format your response as a JSON object that strictly follows this schema:\n\n {format_instructions}\n\n"
+prompt_message = f"You are a helpful meeting summarizer and analyst agent. Your task is to analyze meeting transcripts. Based on the transcript, give it a title, provide a summary of about 100 words if possible and more based on the meeting transcript, a list of action items according to their prority and their assignment to which participant, also the action items should have priority as high, medium and low, the status of action items include -> pending, in-progress, completed and the key points discussed. Also, mention all the participants in the meeting along with the total time elapsed in minutes (Eg -> 120, 70) and also give start time and end time of the meeting in 24 hours format using transcript. Also, you will be recieving the date of meeting in the transcript. Give me the date in dd-mm-yyy format. Please format your response as a JSON object that strictly follows this schema:\n\n {format_instructions}\n\n"
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", "{prompt_message}"),

@@ -34,7 +34,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           <CardTitle className="text-base">{meeting.title}</CardTitle>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>{new Date(meeting.date).toLocaleString()}</span>
+            <span>{meeting.date}</span>
           </div>
         </div>
         <DropdownMenu>

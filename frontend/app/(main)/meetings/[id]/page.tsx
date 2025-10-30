@@ -173,9 +173,7 @@ export default function MeetingDetailPage() {
           <div className="flex items-center space-x-4 text-muted-foreground">
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
-              <span>
-                {meeting?.date ? new Date(meeting.date).toLocaleString() : ""}
-              </span>
+              <span>{meeting?.date}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />

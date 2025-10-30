@@ -130,9 +130,7 @@ export default function MeetingsPage() {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <div className="font-medium">
-                          {new Date(meeting.date).toLocaleDateString()}
-                        </div>
+                        <div className="font-medium">{meeting.date}</div>
                         <div className="text-sm text-muted-foreground">
                           {meeting.start_time}
                         </div>
