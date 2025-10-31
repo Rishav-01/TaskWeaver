@@ -20,17 +20,18 @@ interface UploadMeetingApiResponse {
 
 class MeetingService {
   private VITE_API_URL: string = process.env.NEXT_PUBLIC_API_URL!;
-  private token = localStorage.getItem("token");
 
   getMeetings = async (): Promise<GetMeetingsByUserApiResponse> => {
-    if (!this.token) throw new Error("No token found");
+    const token = localStorage.getItem("token");
+
+    if (!token) throw new Error("No token found");
 
     try {
       const response = await fetch(`${this.VITE_API_URL}/meetings`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -48,7 +49,9 @@ class MeetingService {
   getMeetingById = async (
     meetingId: string
   ): Promise<GetMeetingByIdApiResponse> => {
-    if (!this.token) throw new Error("No token found");
+    const token = localStorage.getItem("token");
+
+    if (!token) throw new Error("No token found");
 
     try {
       const response = await fetch(
@@ -56,7 +59,7 @@ class MeetingService {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -73,7 +76,9 @@ class MeetingService {
   };
 
   uploadMeeting = async (file: File): Promise<UploadMeetingApiResponse> => {
-    if (!this.token) throw new Error("No token found");
+    const token = localStorage.getItem("token");
+
+    if (!token) throw new Error("No token found");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -82,7 +87,7 @@ class MeetingService {
       const response = await fetch(`${this.VITE_API_URL}/upload-meeting`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
