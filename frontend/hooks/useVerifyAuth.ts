@@ -19,8 +19,9 @@ export function useVerifyAuth() {
       }
 
       try {
-        await authService.verifyToken(token);
+        const userObject = await authService.verifyToken(token);
         setIsVerified(true);
+        localStorage.setItem("user", JSON.stringify(userObject));
       } catch (error) {
         router.replace("/");
       } finally {

@@ -1,34 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  Palette, 
-  Globe, 
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  User,
+  Bell,
+  Shield,
+  Palette,
+  Globe,
   Upload,
   Save,
   Bot,
-  Trash2
-} from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+  Trash2,
+} from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { VerifyTokenApiResponse } from "@/types/authType";
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -36,28 +37,39 @@ export default function SettingsPage() {
     push: false,
     meetingReminders: true,
     actionItemUpdates: true,
-    weeklyReports: false
-  })
+    weeklyReports: false,
+  });
 
   const [aiSettings, setAiSettings] = useState({
     autoExtractParticipants: true,
     autoGenerateActionItems: true,
     generateInsights: true,
-    sentimentAnalysis: false
-  })
+    sentimentAnalysis: false,
+  });
+
+  const [userObject, setUserObject] = useState<VerifyTokenApiResponse | null>(
+    null
+  );
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) setUserObject(JSON.parse(user));
+  }, []);
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and application preferences</p>
+        <p className="text-muted-foreground">
+          Manage your account and application preferences
+        </p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="ai">AI Settings</TabsTrigger>
+          {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
+          {/* <TabsTrigger value="ai">AI Settings</TabsTrigger> */}
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
@@ -74,9 +86,12 @@ export default function SettingsPage() {
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src="/avatar.jpg" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>
+                    {userObject?.first_name.charAt(0)}{" "}
+                    {userObject?.last_name?.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Button variant="outline">
                     <Upload className="mr-2 h-4 w-4" />
                     Upload Photo
@@ -84,36 +99,40 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground">
                     JPG, GIF or PNG. Max size of 800KB.
                   </p>
-                </div>
+                </div> */}
               </div>
-              
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="John" />
+                  <Input id="firstName" defaultValue={userObject?.first_name} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Doe" />
+                  <Input id="lastName" defaultValue={userObject?.last_name} />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="john@example.com" />
+                <Input
+                  id="email"
+                  type="email"
+                  defaultValue={userObject?.email}
+                />
               </div>
-              
-              <div className="space-y-2">
+
+              {/* <div className="space-y-2">
                 <Label htmlFor="title">Job Title</Label>
                 <Input id="title" defaultValue="Product Manager" />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="company">Company</Label>
                 <Input id="company" defaultValue="Tech Corp" />
-              </div>
-              
-              <div className="space-y-2">
+              </div> */}
+
+              {/* <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
                 <Select defaultValue="utc-5">
                   <SelectTrigger>
@@ -126,8 +145,8 @@ export default function SettingsPage() {
                     <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              
+              </div> */}
+
               <Button>
                 <Save className="mr-2 h-4 w-4" />
                 Save Changes
@@ -153,16 +172,16 @@ export default function SettingsPage() {
                       Receive notifications via email
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={notifications.email}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, email: checked }))
+                    onCheckedChange={(checked) =>
+                      setNotifications((prev) => ({ ...prev, email: checked }))
                     }
                   />
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Push Notifications</div>
@@ -170,16 +189,16 @@ export default function SettingsPage() {
                       Receive push notifications in browser
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={notifications.push}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, push: checked }))
+                    onCheckedChange={(checked) =>
+                      setNotifications((prev) => ({ ...prev, push: checked }))
                     }
                   />
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Meeting Reminders</div>
@@ -187,14 +206,17 @@ export default function SettingsPage() {
                       Get reminded about upcoming meetings
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={notifications.meetingReminders}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, meetingReminders: checked }))
+                    onCheckedChange={(checked) =>
+                      setNotifications((prev) => ({
+                        ...prev,
+                        meetingReminders: checked,
+                      }))
                     }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Action Item Updates</div>
@@ -202,14 +224,17 @@ export default function SettingsPage() {
                       Notifications when action items are completed or overdue
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={notifications.actionItemUpdates}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, actionItemUpdates: checked }))
+                    onCheckedChange={(checked) =>
+                      setNotifications((prev) => ({
+                        ...prev,
+                        actionItemUpdates: checked,
+                      }))
                     }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Weekly Reports</div>
@@ -217,10 +242,13 @@ export default function SettingsPage() {
                       Receive weekly meeting summary reports
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={notifications.weeklyReports}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, weeklyReports: checked }))
+                    onCheckedChange={(checked) =>
+                      setNotifications((prev) => ({
+                        ...prev,
+                        weeklyReports: checked,
+                      }))
                     }
                   />
                 </div>
@@ -242,44 +270,53 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-2">
                   <Bot className="h-4 w-4 text-blue-600" />
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Configure how AI processes your meeting data and generates insights.
+                    Configure how AI processes your meeting data and generates
+                    insights.
                   </p>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Auto-extract Participants</div>
                     <div className="text-sm text-muted-foreground">
-                      Automatically identify meeting participants from transcripts
+                      Automatically identify meeting participants from
+                      transcripts
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aiSettings.autoExtractParticipants}
-                    onCheckedChange={(checked) => 
-                      setAiSettings(prev => ({ ...prev, autoExtractParticipants: checked }))
+                    onCheckedChange={(checked) =>
+                      setAiSettings((prev) => ({
+                        ...prev,
+                        autoExtractParticipants: checked,
+                      }))
                     }
                   />
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Generate Action Items</div>
                     <div className="text-sm text-muted-foreground">
-                      Automatically extract and create action items from meeting content
+                      Automatically extract and create action items from meeting
+                      content
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aiSettings.autoGenerateActionItems}
-                    onCheckedChange={(checked) => 
-                      setAiSettings(prev => ({ ...prev, autoGenerateActionItems: checked }))
+                    onCheckedChange={(checked) =>
+                      setAiSettings((prev) => ({
+                        ...prev,
+                        autoGenerateActionItems: checked,
+                      }))
                     }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Meeting Insights</div>
@@ -287,14 +324,17 @@ export default function SettingsPage() {
                       Generate key insights and summaries for each meeting
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aiSettings.generateInsights}
-                    onCheckedChange={(checked) => 
-                      setAiSettings(prev => ({ ...prev, generateInsights: checked }))
+                    onCheckedChange={(checked) =>
+                      setAiSettings((prev) => ({
+                        ...prev,
+                        generateInsights: checked,
+                      }))
                     }
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Sentiment Analysis</div>
@@ -302,17 +342,20 @@ export default function SettingsPage() {
                       Analyze the overall sentiment and engagement in meetings
                     </div>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={aiSettings.sentimentAnalysis}
-                    onCheckedChange={(checked) => 
-                      setAiSettings(prev => ({ ...prev, sentimentAnalysis: checked }))
+                    onCheckedChange={(checked) =>
+                      setAiSettings((prev) => ({
+                        ...prev,
+                        sentimentAnalysis: checked,
+                      }))
                     }
                   />
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div className="space-y-3">
                 <h4 className="font-medium">AI Processing Quality</h4>
                 <Select defaultValue="balanced">
@@ -320,9 +363,15 @@ export default function SettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fast">Fast (Less accurate, faster processing)</SelectItem>
-                    <SelectItem value="balanced">Balanced (Good balance of speed and accuracy)</SelectItem>
-                    <SelectItem value="accurate">Accurate (Higher accuracy, slower processing)</SelectItem>
+                    <SelectItem value="fast">
+                      Fast (Less accurate, faster processing)
+                    </SelectItem>
+                    <SelectItem value="balanced">
+                      Balanced (Good balance of speed and accuracy)
+                    </SelectItem>
+                    <SelectItem value="accurate">
+                      Accurate (Higher accuracy, slower processing)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -348,10 +397,10 @@ export default function SettingsPage() {
                 </div>
                 <ThemeToggle />
               </div>
-              
-              <Separator />
-              
-              <div className="space-y-3">
+
+              {/* <Separator /> */}
+
+              {/* <div className="space-y-3">
                 <Label>Language</Label>
                 <Select defaultValue="en">
                   <SelectTrigger>
@@ -365,9 +414,9 @@ export default function SettingsPage() {
                     <SelectItem value="de">Deutsch</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              
-              <div className="space-y-3">
+              </div> */}
+
+              {/* <div className="space-y-3">
                 <Label>Date Format</Label>
                 <Select defaultValue="mdy">
                   <SelectTrigger>
@@ -379,9 +428,9 @@ export default function SettingsPage() {
                     <SelectItem value="ymd">YYYY-MM-DD</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              
-              <div className="space-y-3">
+              </div> */}
+
+              {/* <div className="space-y-3">
                 <Label>Time Format</Label>
                 <Select defaultValue="12">
                   <SelectTrigger>
@@ -392,7 +441,7 @@ export default function SettingsPage() {
                     <SelectItem value="24">24-hour</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </TabsContent>
@@ -409,7 +458,11 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input id="currentPassword" type="password" className="mt-1" />
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    className="mt-1"
+                  />
                 </div>
                 <div>
                   <Label htmlFor="newPassword">New Password</Label>
@@ -417,15 +470,19 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input id="confirmPassword" type="password" className="mt-1" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    className="mt-1"
+                  />
                 </div>
               </div>
-              
+
               <Button>Update Password</Button>
-              
-              <Separator />
-              
-              <div className="space-y-4">
+
+              {/* <Separator /> */}
+
+              {/* <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">Two-Factor Authentication</div>
@@ -436,19 +493,22 @@ export default function SettingsPage() {
                   <Badge variant="outline">Not enabled</Badge>
                 </div>
                 <Button variant="outline">Enable 2FA</Button>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
-          
+
           <Card className="border-red-200 dark:border-red-900">
             <CardHeader>
-              <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
+              <CardTitle className="text-red-600 dark:text-red-400">
+                Danger Zone
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <h4 className="font-medium">Delete Account</h4>
                 <p className="text-sm text-muted-foreground">
-                  Permanently delete your account and all associated data. This action cannot be undone.
+                  Permanently delete your account and all associated data. This
+                  action cannot be undone.
                 </p>
               </div>
               <Button variant="destructive">
@@ -460,5 +520,5 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

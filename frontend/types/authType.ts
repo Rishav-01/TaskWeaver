@@ -28,3 +28,10 @@ export const formSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(4, "Password must be at least 4 characters"),
 });
+
+export interface VerifyTokenApiResponse{
+  email: string;
+  first_name: string;
+  last_name?: string;
+  password: string;
+}
