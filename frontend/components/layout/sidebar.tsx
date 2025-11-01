@@ -45,13 +45,13 @@ export function Sidebar({ className }: SidebarProps) {
     >
       <div
         className={cn(
-          "flex items-center justify-between p-4 transition-all",
-          collapsed ? "px-2" : "px-4"
+          "flex items-center justify-between p-4 h-20 border-b transition-all",
+          collapsed ? "px-2" : "px-4 "
         )}
       >
         <div
           className={cn(
-            "flex items-center transition-all",
+            "flex items-center transition-opacity duration-200",
             collapsed ? "justify-center w-full" : "space-x-2"
           )}
         >
@@ -59,14 +59,17 @@ export function Sidebar({ className }: SidebarProps) {
             onClick={() => setCollapsed(false)}
             className={cn(
               "flex h-8 w-8 items-center justify-center rounded-lg",
-              collapsed && "cursor-pointer"
+              collapsed && "cursor-pointer hover:bg-accent"
             )}
           >
             <Bot className="h-8 w-8" />
           </div>
 
           {!collapsed && (
-            <div className="flex flex-col gap-1">
+            <div
+              className="flex flex-col gap-1 transition-all duration-200"
+              style={{ opacity: collapsed ? 0 : 1 }}
+            >
               <span className="text-sm font-semibold leading-none">
                 TaskWeaver
               </span>
@@ -91,8 +94,8 @@ export function Sidebar({ className }: SidebarProps) {
         )}
       </div>
 
-      <ScrollArea className={cn("flex-1", collapsed ? "px-1" : "px-3")}>
-        <nav className="space-y-1" role="navigation" aria-label="Sidebar">
+      <ScrollArea className={cn("flex-1", collapsed ? "px-2" : "px-4")}>
+        <nav className="space-y-2 py-4" role="navigation" aria-label="Sidebar">
           {navigation.map((item) => {
             const isActive =
               pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -106,7 +109,7 @@ export function Sidebar({ className }: SidebarProps) {
                 className={cn(
                   "flex items-center rounded-lg transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   collapsed
-                    ? "justify-center p-2"
+                    ? "justify-center p-3"
                     : "px-3 py-2 text-sm font-medium",
                   isActive
                     ? "bg-primary text-primary-foreground"
@@ -122,7 +125,12 @@ export function Sidebar({ className }: SidebarProps) {
                 />
 
                 {!collapsed ? (
-                  <span className="ml-3">{item.name}</span>
+                  <span
+                    className="ml-3 transition-opacity duration-200"
+                    style={{ opacity: collapsed ? 0 : 1 }}
+                  >
+                    {item.name}
+                  </span>
                 ) : (
                   // keep label for screen-readers when collapsed
                   <span className="sr-only">{item.name}</span>
