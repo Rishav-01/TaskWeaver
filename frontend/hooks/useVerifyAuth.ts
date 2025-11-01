@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { authService } from "@/services/authService";
 
 export function useVerifyAuth() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isVerified, setIsVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -19,17 +21,19 @@ export function useVerifyAuth() {
       }
 
       try {
-        await authService.verifyToken(token);
+        const userObject = await authService.verifyToken(token);
         setIsVerified(true);
+        localStorage.setItem("user", JSON.stringify(userObject));
       } catch (error) {
-        router.replace("/");
+        localStorage.clear();
+        setError("Session expired. Please log in again.");
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, pathname]);
 
-  return { isLoading, isVerified };
+  return { isLoading, isVerified, error };
 }

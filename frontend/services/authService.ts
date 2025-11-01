@@ -1,4 +1,8 @@
-import { LoginData, SignupData } from "@/types/authType";
+import {
+  LoginData,
+  SignupData,
+  VerifyTokenApiResponse,
+} from "@/types/authType";
 
 class AuthService {
   private VITE_API_URL: string = "http://localhost:8000";
@@ -32,7 +36,8 @@ class AuthService {
         body: JSON.stringify(signupData),
       });
       if (!response.ok) {
-        throw new Error("Signup failed");
+        const errorData = await response.json();
+        throw new Error(errorData.detail);
       }
       localStorage.setItem("token", (await response.json()).token);
     } catch (error) {
@@ -41,7 +46,7 @@ class AuthService {
     }
   }
 
-  verifyToken = async (token: string) => {
+  verifyToken = async (token: string): Promise<VerifyTokenApiResponse> => {
     try {
       const response = await fetch(`${this.VITE_API_URL}/users/me`, {
         method: "GET",

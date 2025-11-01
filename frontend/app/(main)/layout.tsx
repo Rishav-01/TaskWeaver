@@ -4,6 +4,7 @@ import "../globals.css";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { Inter } from "next/font/google";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,6 +16,7 @@ export default function DashboardLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <Toaster />
         <ProtectedRoute>
           <ThemeProvider
             attribute="class"

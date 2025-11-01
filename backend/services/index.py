@@ -2,6 +2,7 @@ from passlib.context import CryptContext
 from db.config import user_collection, meeting_collection
 from models.Meeting import Meeting
 from fastapi import HTTPException
+from bson.objectid import ObjectId
 from schemas.index import CreatedMeeting
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -23,4 +24,33 @@ def create_meeting(meeting: Meeting) -> CreatedMeeting:
             del created_meeting["_id"]
         return created_meeting
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def get_meetings_by_user(user_email: str) ->list[CreatedMeeting]:
+    """Retrieves all meetings for a specific user and return the meetings in descending order of their creation"""
+    try:
+        meetings_cursor = meeting_collection.find({"user_id": user_email})
+        meetings = []
+        for meeting in meetings_cursor:
+            meeting["id"] = str(meeting["_id"])
+            del meeting["_id"]
+            meetings.append(meeting)
+
+        # Sort meetings in descending order of their creation time
+        meetings.sort(key=lambda x: x["date"], reverse=True)
+        return meetings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def get_meeting_by_id(meeting_id: str) -> CreatedMeeting:
+    """Retrieves a specific meeting by its ID."""
+    try:
+        # Convert the string ID to a MongoDB ObjectId
+        obj_id = ObjectId(meeting_id)
+        meeting = meeting_collection.find_one({"_id": obj_id})
+        if meeting:
+            meeting["id"] = str(meeting["_id"])
+            del meeting["_id"]
+        return meeting
+    except Exception as e: # Catches invalid ObjectId format and other errors
         raise HTTPException(status_code=500, detail=str(e))

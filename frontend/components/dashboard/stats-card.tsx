@@ -1,18 +1,24 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DivideIcon as LucideIcon } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DivideIcon as LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
-  title: string
-  value: string
-  description: string
-  icon: LucideIcon
+  title: string;
+  value: number;
+  description: string;
+  icon: typeof LucideIcon;
   trend?: {
-    value: string
-    isPositive: boolean
-  }
+    value: string;
+    isPositive: boolean;
+  };
 }
 
-export function StatsCard({ title, value, description, icon: Icon, trend }: StatsCardProps) {
+export function StatsCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  trend,
+}: StatsCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -21,13 +27,17 @@ export function StatsCard({ title, value, description, icon: Icon, trend }: Stat
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        {/* <p className="text-xs text-muted-foreground">{description}</p> */}
         {trend && (
-          <div className={`text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'} mt-1`}>
-            {trend.isPositive ? '↑' : '↓'} {trend.value}
+          <div
+            className={`text-xs ${
+              trend.isPositive ? "text-green-600" : "text-red-600"
+            } mt-1`}
+          >
+            {trend.isPositive ? "↑" : "↓"} {trend.value}
           </div>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

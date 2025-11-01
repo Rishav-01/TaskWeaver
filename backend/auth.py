@@ -34,7 +34,7 @@ def create_user(user: User) -> CreatedUserResponse:
         # Check if this email is already registered
         existing_user = user_collection.find_one({"email": user.email})
         if existing_user:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise DuplicateKeyError(error="Email already registered")
 
         # Hash the password directly here
         hashed_password = get_password_hash(user.password)

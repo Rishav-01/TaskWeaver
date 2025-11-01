@@ -6,7 +6,7 @@ from typing import List
 class Meeting(BaseModel):
     user_id: str
     title: str
-    date: datetime
+    date: str
     participants: list[str]
     duration: int  # duration in minutes
     summary: str

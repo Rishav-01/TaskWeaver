@@ -37,57 +37,10 @@ import {
   subDays,
 } from "date-fns";
 import { useRouter } from "next/navigation";
-
-const meetings = [
-  {
-    id: "1",
-    title: "Product Strategy Review",
-    date: "2025-12-12",
-    time: "14:00",
-    duration: "90 min",
-    participants: 4,
-    status: "scheduled",
-  },
-  {
-    id: "2",
-    title: "Weekly Standup",
-    date: "2024-12-13",
-    time: "10:00",
-    duration: "30 min",
-    participants: 6,
-    status: "scheduled",
-  },
-  {
-    id: "3",
-    title: "Client Presentation",
-    date: "2024-12-14",
-    time: "15:30",
-    duration: "60 min",
-    participants: 3,
-    status: "scheduled",
-  },
-  {
-    id: "4",
-    title: "Budget Review",
-    date: "2024-12-16",
-    time: "11:00",
-    duration: "120 min",
-    participants: 5,
-    status: "scheduled",
-  },
-  {
-    id: "5",
-    title: "Demo meeting",
-    date: "2025-08-25",
-    time: "11:00",
-    duration: "120 min",
-    participants: 5,
-    status: "scheduled",
-  },
-];
+import { useMeetings } from "@/hooks/useMeetings";
 
 const statusColors = {
-  scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  pending: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
   completed:
     "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
   "in-progress":
@@ -95,6 +48,8 @@ const statusColors = {
 };
 
 export default function CalendarPage() {
+  const { meetings, isLoadingMeetings, isErrorinMeetings } = useMeetings();
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState("month");
@@ -107,14 +62,14 @@ export default function CalendarPage() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const getMeetingsForDate = (date: Date) => {
-    const dateStr = format(date, "yyyy-MM-dd");
+    const dateStr = format(date, "dd-MM-yyyy");
     return meetings.filter((meeting) => meeting.date === dateStr);
   };
 
   const getDayMeetings = (day: number) => {
-    const dateStr = `${year}-${(month + 1).toString().padStart(2, "0")}-${day
+    const dateStr = `${day.toString().padStart(2, "0")}-${(month + 1)
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, "0")}-${year}`;
     return meetings.filter((meeting) => meeting.date === dateStr);
   };
 
@@ -174,7 +129,7 @@ export default function CalendarPage() {
                 key={meeting.id}
                 className="text-xs p-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 truncate"
               >
-                {meeting.time} {meeting.title}
+                {meeting?.start_time} {meeting.title}
               </div>
             ))}
             {dayMeetings.length > 2 && (
@@ -228,7 +183,7 @@ export default function CalendarPage() {
                   className="text-xs p-2 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 cursor-pointer"
                 >
                   <div className="font-semibold truncate">{meeting.title}</div>
-                  <div>{meeting.time}</div>
+                  <div>{meeting?.start_time}</div>
                 </div>
               ))}
             </div>
@@ -275,8 +230,9 @@ export default function CalendarPage() {
 
           {/* Meetings */}
           {dayMeetings.map((meeting) => {
-            const top = (timeToMinutes(meeting.time) / 60) * 96; // 96px/hr (h-24)
-            const height = (durationToMinutes(meeting.duration) / 60) * 96;
+            const top = (timeToMinutes(meeting?.start_time) / 60) * 96; // 96px/hr (h-24)
+            const height =
+              (durationToMinutes(String(meeting?.duration)) / 60) * 96;
 
             return (
               <div
@@ -288,7 +244,7 @@ export default function CalendarPage() {
                 <div className="truncate text-sm font-semibold">
                   {meeting.title}
                 </div>
-                <div className="text-xs">{meeting.time}</div>
+                <div className="text-xs">{meeting?.start_time}</div>
               </div>
             );
           })}
@@ -348,9 +304,11 @@ export default function CalendarPage() {
     return format(currentDate, "MMMM d, yyyy");
   };
   const today = new Date();
-  const todayDateString = `${today.getFullYear()}-${(today.getMonth() + 1)
+  const todayDateString = `${today.getDate().toString().padStart(2, "0")}-${(
+    today.getMonth() + 1
+  )
     .toString()
-    .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+    .padStart(2, "0")}-${today.getFullYear()}`;
   const todaysMeetings = meetings.filter((m) => m.date === todayDateString);
   const selectedDateMeetings = selectedDate
     ? getMeetingsForDate(selectedDate)
@@ -418,7 +376,7 @@ export default function CalendarPage() {
                       <h4 className="font-medium text-sm">{meeting.title}</h4>
                       <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-1">
                         <Clock className="h-3 w-3" />
-                        <span>{meeting.time}</span>
+                        <span>{meeting?.start_time}</span>
                         <span>•</span>
                         <span>{meeting.duration}</span>
                       </div>
@@ -494,13 +452,13 @@ export default function CalendarPage() {
                   <h4 className="font-medium">{meeting.title}</h4>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                     <Clock className="h-3 w-3" />
-                    <span>{meeting.time}</span>
+                    <span>{meeting?.start_time}</span>
                     <span>•</span>
-                    <span>{meeting.duration}</span>
+                    <span>{meeting.duration} min</span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                     <Users className="h-3 w-3" />
-                    <span>{meeting.participants} participants</span>
+                    <span>{meeting.participants.length} participants</span>
                   </div>
                 </div>
                 <Badge

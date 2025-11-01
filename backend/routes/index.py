@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from llm import call_chain
+from utils import extract_text_from_file
 from models.Meeting import Meeting
 from models.User import User
 from schemas.index import Token, UserLoginModel
-from services.index import create_meeting
+from services.index import create_meeting, get_meetings_by_user, get_meeting_by_id
 from datetime import datetime, timedelta
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -66,9 +67,11 @@ async def login_user(user: UserLoginModel):
     return {"token": access_token, "token_type": "bearer"}
 
 @router.post('/upload-meeting')
-async def upload_meeting(transcript_content: str, current_user: User = Depends(get_current_user)):
+async def upload_meeting(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Accepts a meeting transcript and returns a structured summary."""
-    summary_dict = call_chain(transcript_content) # Pass the plain string directly to call_chain
+    transcript_str = await extract_text_from_file(file)
+
+    summary_dict = call_chain(transcript_str)
 
     try:
         # Create a Meeting model instance
@@ -77,7 +80,7 @@ async def upload_meeting(transcript_content: str, current_user: User = Depends(g
             action_items=summary_dict.action_items,
             key_points=summary_dict.key_points,
             participants=summary_dict.participants,
-            date=datetime.now(),
+            date=summary_dict.date,
             duration=summary_dict.duration,
             title=summary_dict.title,
             user_id=current_user.email, # Use authenticated user's email
@@ -105,4 +108,14 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 @router.get('/meetings')
 async def get_meetings(current_user: User = Depends(get_current_user)):
     """Retrieves all meetings for the authenticated user."""
-    return {"meetings": "meetings"}
+    user_meetings = get_meetings_by_user(current_user.email)
+    return {"message": "Meetings retrieved successfully", "success": True, "data": user_meetings}
+
+@router.get('/meetings/{meeting_id}')
+async def get_meeting(meeting_id: str, current_user: User = Depends(get_current_user)):
+    """Retrieves a specific meeting by its ID."""
+    meeting = get_meeting_by_id(meeting_id)
+    if meeting:
+        return {"message": "Meeting retrieved successfully", "success": True, "data": meeting}
+    else:
+        return {"error": "Meeting not found", "success": False, "data": None}

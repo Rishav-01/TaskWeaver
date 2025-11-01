@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,65 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-const meetings = [
-  {
-    id: "1",
-    title: "Product Strategy Review",
-    date: "Dec 12, 2024",
-    time: "2:00 PM",
-    participants: [
-      { name: "John Doe", avatar: "" },
-      { name: "Jane Smith", avatar: "" },
-      { name: "Mike Johnson", avatar: "" },
-    ],
-    status: "scheduled",
-    actionItems: 5,
-    duration: "60 min",
-  },
-  {
-    id: "2",
-    title: "Weekly Team Standup",
-    date: "Dec 11, 2024",
-    time: "10:00 AM",
-    participants: [
-      { name: "Alice Brown", avatar: "" },
-      { name: "Bob Wilson", avatar: "" },
-      { name: "Carol Davis", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 3,
-    duration: "30 min",
-  },
-  {
-    id: "3",
-    title: "Client Presentation Prep",
-    date: "Dec 10, 2024",
-    time: "3:30 PM",
-    participants: [
-      { name: "David Lee", avatar: "" },
-      { name: "Emma Taylor", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 7,
-    duration: "90 min",
-  },
-  {
-    id: "4",
-    title: "Budget Planning Q1 2025",
-    date: "Dec 9, 2024",
-    time: "11:00 AM",
-    participants: [
-      { name: "Frank Miller", avatar: "" },
-      { name: "Grace Lee", avatar: "" },
-      { name: "Henry Chen", avatar: "" },
-      { name: "Iris Wang", avatar: "" },
-    ],
-    status: "completed",
-    actionItems: 12,
-    duration: "120 min",
-  },
-];
+import { useMeetings } from "@/hooks/useMeetings";
 
 const statusColors = {
   completed:
@@ -109,7 +51,15 @@ const statusColors = {
 export default function MeetingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const { getMeetings, meetings, isLoadingMeetings, isErrorinMeetings } =
+    useMeetings();
+
   const navigate = useRouter();
+
+  useEffect(() => {
+    getMeetings();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -182,7 +132,7 @@ export default function MeetingsPage() {
                       <div>
                         <div className="font-medium">{meeting.date}</div>
                         <div className="text-sm text-muted-foreground">
-                          {meeting.time}
+                          {meeting.start_time}
                         </div>
                       </div>
                     </div>
@@ -197,9 +147,9 @@ export default function MeetingsPage() {
                               key={index}
                               className="h-6 w-6 border-2 border-background"
                             >
-                              <AvatarImage src={participant.avatar} />
+                              {/* <AvatarImage src={participant.avatar} /> */}
                               <AvatarFallback className="text-xs">
-                                {participant.name
+                                {participant
                                   .split(" ")
                                   .map((n) => n[0])
                                   .join("")}
@@ -231,7 +181,7 @@ export default function MeetingsPage() {
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <FileText className="h-4 w-4 text-muted-foreground" />
-                      <span>{meeting.actionItems}</span>
+                      <span>{meeting.action_items.length}</span>
                     </div>
                   </TableCell>
                   <TableCell>{meeting.duration}</TableCell>
