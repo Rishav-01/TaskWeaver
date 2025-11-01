@@ -120,12 +120,12 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="space-y-2">
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
                   <p className="text-sm">
                     Meeting efficiency up 23% this month
                   </p>
-                </div>
+                </div> */}
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-2 rounded-full bg-blue-500"></div>
                   <p className="text-sm">

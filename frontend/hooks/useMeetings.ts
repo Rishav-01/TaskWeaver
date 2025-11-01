@@ -23,7 +23,7 @@ export const useMeetings = () => {
       value: 0,
       icon: Users,
       description: "This month",
-      trend: { value: "12%", isPositive: true },
+      // trend: { value: "12%", isPositive: true },
     },
     // {
     //   title: "Upcoming Meetings",
@@ -37,14 +37,14 @@ export const useMeetings = () => {
       value: 0,
       icon: CheckCircle,
       description: "This month",
-      trend: { value: "8%", isPositive: true },
+      // trend: { value: "8%", isPositive: true },
     },
     {
       title: "Pending Actions",
       value: 0,
       icon: Clock,
       description: "Requires attention",
-      trend: { value: "5%", isPositive: false },
+      // trend: { value: "5%", isPositive: false },
     },
   ]);
   const [averageMeetingTime, setAverageMeetingTime] = useState<number>(0);
