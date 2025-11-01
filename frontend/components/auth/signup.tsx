@@ -53,21 +53,21 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
               <div className="flex justify-center mb-4">
                 <div className="flex items-center space-x-2">
                   <Bot className="h-6 w-6 text-primary" />
-                  <span className="text-xl font-bold">MeetingAI</span>
+                  <span className="text-xl font-bold">TaskWeaver</span>
                 </div>
               </div>
               <CardTitle className="text-2xl">Create an account</CardTitle>
               <p className="text-muted-foreground">
-                Enter your details to get started with MeetingAI
+                Enter your details to get started with TaskWeaver
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full">
+              {/* <Button variant="outline" className="w-full">
                 <Chrome className="mr-2 h-4 w-4" />
                 Continue with Google
-              </Button>
+              </Button> */}
 
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator />
                 </div>
@@ -76,7 +76,7 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
                     Or continue with
                   </span>
                 </div>
-              </div>
+              </div> */}
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">

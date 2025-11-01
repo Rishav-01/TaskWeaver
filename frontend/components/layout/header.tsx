@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useEffect, useState } from "react";
 import { VerifyTokenApiResponse } from "@/types/authType";
 import { useRouter } from "next/navigation";
+import { Snackbar } from "../common/Snackbar";
 
 export function Header() {
   const [userObject, setUserObject] = useState<VerifyTokenApiResponse | null>(
@@ -26,10 +27,13 @@ export function Header() {
     if (user) setUserObject(JSON.parse(user));
   }, []);
 
-  const handleLogout = () => {
+  const handleLogoutUser = () => {
     localStorage.clear();
+    Snackbar.success("Logged out successfully");
     setUserObject(null);
-    router.push("/");
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
   };
 
   const router = useRouter();
@@ -86,7 +90,12 @@ export function Header() {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem
+              onClick={() => {
+                setUserObject(null);
+                handleLogoutUser();
+              }}
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
