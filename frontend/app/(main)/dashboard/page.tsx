@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import DashboardLoading from "./loading";
 
 export default function DashboardPage() {
   const {
@@ -22,9 +23,14 @@ export default function DashboardPage() {
     setIsErrorInMeetings,
     meetingStats,
     averageMeetingTime,
+    isLoadingMeetings,
   } = useMeetings();
 
   const navigate = useRouter();
+
+  if (isLoadingMeetings) {
+    return <DashboardLoading />;
+  }
 
   return (
     <div className="space-y-6">
@@ -42,7 +48,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {meetingStats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
@@ -129,7 +135,7 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-2">
                   <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
                   <p className="text-sm">
-                    {meetingStats[3].value} action items due this week
+                    {meetingStats[2].value} action items due this week
                   </p>
                 </div>
               </div>

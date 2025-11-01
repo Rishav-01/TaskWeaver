@@ -25,13 +25,13 @@ export const useMeetings = () => {
       description: "This month",
       trend: { value: "12%", isPositive: true },
     },
-    {
-      title: "Upcoming Meetings",
-      value: 0,
-      icon: Calendar,
-      description: "Next 7 days",
-      trend: { value: "3%", isPositive: true },
-    },
+    // {
+    //   title: "Upcoming Meetings",
+    //   value: 0,
+    //   icon: Calendar,
+    //   description: "Next 7 days",
+    //   trend: { value: "3%", isPositive: true },
+    // },
     {
       title: "Completed Actions",
       value: 0,
