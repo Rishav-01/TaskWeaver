@@ -26,6 +26,12 @@ export function Header() {
     if (user) setUserObject(JSON.parse(user));
   }, []);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    setUserObject(null);
+    router.push("/");
+  };
+
   const router = useRouter();
 
   return (
@@ -80,7 +86,7 @@ export function Header() {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
