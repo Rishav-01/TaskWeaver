@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 
 class ActionItem(BaseModel):
+    id: str
     status: str         # e.g., "pending", "completed", "in-progress"
     description: str
     assigned_to: str

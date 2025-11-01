@@ -1,4 +1,5 @@
 interface ActionItems {
+  id: string;
   status: "pending" | "completed" | "in-progress";
   assigned_to: string;
   due_date: string;
