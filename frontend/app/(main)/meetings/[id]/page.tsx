@@ -46,95 +46,6 @@ import {
 import { useMeetings } from "@/hooks/useMeetings";
 import { useParams } from "next/navigation";
 
-const meetingData = {
-  id: "1",
-  title: "Product Strategy Review",
-  date: "Dec 12, 2024",
-  time: "2:00 PM - 3:30 PM",
-  status: "completed",
-  participants: [
-    {
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Product Manager",
-      avatar: "",
-    },
-    {
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "UX Designer",
-      avatar: "",
-    },
-    {
-      name: "Mike Johnson",
-      email: "mike@example.com",
-      role: "Engineering Lead",
-      avatar: "",
-    },
-    {
-      name: "Sarah Wilson",
-      email: "sarah@example.com",
-      role: "Marketing Director",
-      avatar: "",
-    },
-  ],
-  transcript: `[00:00] John Doe: Good afternoon everyone, thanks for joining our product strategy review meeting. Let's start by reviewing our Q4 objectives.
-
-[00:30] Jane Smith: I'd like to discuss the user experience improvements we've been working on. The latest user research shows some interesting findings.
-
-[01:15] Mike Johnson: From a technical perspective, we need to prioritize the infrastructure upgrades. I'll need to coordinate with the DevOps team on this.
-
-[02:00] Sarah Wilson: The marketing campaign for the new feature launch is ready. We should align on the timeline.
-
-[02:30] John Doe: Let's schedule a follow-up meeting to finalize the go-to-market strategy. Mike, can you have the technical requirements ready by Friday?
-
-[03:00] Mike Johnson: Yes, I'll have the technical specifications and timeline ready by end of week.
-
-[03:15] Jane Smith: I'll share the updated wireframes with everyone by Thursday.
-
-[03:30] Sarah Wilson: Perfect, I'll coordinate with the content team to align messaging with the new features.`,
-
-  actionItems: [
-    {
-      id: "1",
-      description:
-        "Prepare technical specifications and timeline for infrastructure upgrades",
-      assignee: "Mike Johnson",
-      dueDate: "2024-12-13",
-      status: "pending",
-      priority: "high",
-      extractedByAI: true,
-    },
-    {
-      id: "2",
-      description: "Share updated wireframes with team",
-      assignee: "Jane Smith",
-      dueDate: "2024-12-12",
-      status: "completed",
-      priority: "medium",
-      extractedByAI: true,
-    },
-    {
-      id: "3",
-      description: "Coordinate with content team on messaging alignment",
-      assignee: "Sarah Wilson",
-      dueDate: "2024-12-15",
-      status: "in-progress",
-      priority: "medium",
-      extractedByAI: true,
-    },
-    {
-      id: "4",
-      description: "Schedule follow-up meeting for go-to-market strategy",
-      assignee: "John Doe",
-      dueDate: "2024-12-14",
-      status: "pending",
-      priority: "high",
-      extractedByAI: false,
-    },
-  ],
-};
-
 const statusColors = {
   pending:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
@@ -344,7 +255,7 @@ export default function MeetingDetailPage() {
                       ) : item.status === "in-progress" ? (
                         <AlertCircle className="h-5 w-5 text-blue-600" />
                       ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground" />
+                        <Circle className="h-5 w-5 text-yellow-600" />
                       )}
                     </div>
                     <div className="flex-1 space-y-2">
