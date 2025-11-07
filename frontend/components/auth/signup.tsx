@@ -44,6 +44,11 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
     }
   };
 
+  const handleGoogleSignup = () => {
+    // Redirect user to the backend, which then redirects to Google
+    window.location.href = "http://localhost:8000/auth/google/login";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container relative flex min-h-screen flex-col items-center justify-center">
@@ -62,12 +67,16 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* <Button variant="outline" className="w-full">
+              <Button
+                onClick={handleGoogleSignup}
+                variant="outline"
+                className="w-full"
+              >
                 <Chrome className="mr-2 h-4 w-4" />
                 Continue with Google
-              </Button> */}
+              </Button>
 
-              {/* <div className="relative">
+              <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <Separator />
                 </div>
@@ -76,7 +85,7 @@ export default function SignUpForm({ setAuthTab }: SignUpFormProps) {
                     Or continue with
                   </span>
                 </div>
-              </div> */}
+              </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">

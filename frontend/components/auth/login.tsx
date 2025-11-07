@@ -56,16 +56,16 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* <Button
+            <Button
               onClick={handleGoogleLogin}
               variant="outline"
               className="w-full"
             >
               <Chrome className="mr-2 h-4 w-4" />
               Continue with Google
-            </Button> */}
+            </Button>
 
-            {/* <div className="relative">
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <Separator />
               </div>
@@ -74,7 +74,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
                   Or continue with
                 </span>
               </div>
-            </div> */}
+            </div>
 
             <div className="space-y-4">
               <div className="space-y-2">

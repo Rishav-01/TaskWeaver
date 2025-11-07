@@ -30,28 +30,42 @@ google_client = GoogleOAuth2(client_id=GOOGLE_CLIENT_ID, client_secret=GOOGLE_CL
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 @auth_router.get("/google/login")
-async def login_google(request: Request):
+async def login_google():
     """Redirects the user to Google's OAuth 2.0 login page."""
-    redirect_uri = request.url_for("auth_google_callback")
-    return await google_client.get_authorization_url(redirect_uri, scope=["email", "profile"])
+    authorization_url = await google_client.get_authorization_url(
+        redirect_uri=REDIRECT_URI,
+        scope=["email", "profile"]
+    )
+    # Return a redirect response to the client
+    return RedirectResponse(url=authorization_url)
 
 @auth_router.get("/google/callback")
 async def auth_google_callback(request: Request, code: str):
     """Handles the callback from google after user authentication"""
-    print("Received code:", code)
     try:
         token_data = await google_client.get_access_token(code, request.url_for("auth_google_callback"))
-        user_data = await google_client.get_user_info(token_data["access_token"])
-        user_email = user_data["email"]
+        access_token = token_data["access_token"]
+        
+        # The library's get_profile is limited, so we make the request directly
+        # to get the fields we need (names and emailAddresses).
+        async with google_client.get_httpx_client() as client:
+            response = await client.get(
+                "https://people.googleapis.com/v1/people/me",
+                params={"personFields": "names,emailAddresses"},
+                headers={"Authorization": f"Bearer {access_token}"},
+            )
+            user_profile = response.json()
 
+        user_email = next(email["value"] for email in user_profile["emailAddresses"] if email["metadata"]["primary"])
+        
         # Check if user exists in the database
         db_user = get_user_by_email(email=user_email)
 
         if not db_user:
             new_user = User(
                 email=user_email,
-                first_name=user_data.get("given_name", ""),
-                last_name=user_data.get("family_name", ""),
+                first_name=user_profile["names"][0].get("givenName", ""),
+                last_name=user_profile["names"][0].get("familyName", ""),
                 password=secrets.token_urlsafe(16)  # Generate a random password
             )
             created_user = create_user(new_user)
@@ -61,12 +75,12 @@ async def auth_google_callback(request: Request, code: str):
 
         # Create access token
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
+        app_access_token = create_access_token(
             data={"sub": user_email}, expires_delta=access_token_expires
         )
         
         # Redirect user to frontend with token
-        response = RedirectResponse(url=f"{FRONTEND_URL}/auth/callback?token={access_token}")
+        response = RedirectResponse(url=f"{FRONTEND_URL}/callback?token={app_access_token}")
         return response
     
     except Exception as e:
