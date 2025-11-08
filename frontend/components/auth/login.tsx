@@ -12,19 +12,28 @@ import { useAuth } from "@/hooks/useAuth";
 import { LoginFormProps } from "@/types/loginFormTypes";
 import { Snackbar } from "../common/Snackbar";
 import { useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { LoginData, loginFormSchema } from "@/types/authType";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const LoginForm = ({ setAuthTab }: LoginFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>({ resolver: zodResolver(loginFormSchema) });
 
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const onSubmit: SubmitHandler<LoginData> = async (data) => {
     try {
       setIsLoading(true);
-      await login({ email, password });
+      await login(data);
       Snackbar.success("Logged in successfully!");
       router.push("/dashboard");
     } catch (error) {
@@ -76,16 +85,17 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   placeholder="name@example.com"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-xs text-red-500">{errors.email.message}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -93,21 +103,24 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
                   id="password"
                   placeholder="********"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-xs text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
               <Button
                 className={`w-full cursor-pointer hover:opacity-80 ${
                   isLoading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
-                asChild
-                onClick={handleLogin}
+                type="submit"
                 disabled={isLoading}
               >
                 <p>Sign In</p>
               </Button>
-            </div>
+            </form>
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
