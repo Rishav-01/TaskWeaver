@@ -3,11 +3,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 import secrets
 from llm import call_chain
-from utils import extract_text_from_file
+from utils import extract_text_from_file, get_date_ranges
 from models.Meeting import Meeting
 from models.User import User
-from schemas.index import Token, UserLoginModel
-from services.index import create_meeting, get_meetings_by_user, get_meeting_by_id
+from schemas.index import Token, UserLoginModel, MeetingReport
+from services.index import create_meeting, get_meetings_by_user, get_meeting_by_id, get_meeting_report, update_action_items
 from datetime import datetime, timedelta
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -130,6 +130,40 @@ async def get_meeting(meeting_id: str, current_user: User = Depends(get_current_
     else:
         return {"error": "Meeting not found", "success": False, "data": None}
 
+@router.get('/report', response_model=MeetingReport)
+async def report(time_range: str = "month", current_user: User = Depends(get_current_user)):
+    """Retrieves report data for the authenticated user based on a time range."""
+
+    start_of_period, end_of_period, start_of_previous_period, end_of_previous_period = get_date_ranges(time_range)
+
+    # Fetch data for the current and previous periods
+    current_data = get_meeting_report(current_user.email, start_of_period, end_of_period)
+    previous_data = get_meeting_report(current_user.email, start_of_previous_period, end_of_previous_period)
+
+    # Helper to calculate percentage change
+    def calculate_change(current, previous):
+        if previous == 0:
+            return 100 if current > 0 else 0
+        return int(((current - previous) / previous) * 100)
+    
+    # Structure the response to match the frontend's expectation
+    report = {
+        "total_meetings": {
+            "value": current_data["total_meetings"],
+            "change": calculate_change(current_data["total_meetings"], previous_data["total_meetings"])
+        },
+        "total_hours": {
+            "value": current_data["meeting_hours"],
+            "change": calculate_change(current_data["meeting_hours"], previous_data["meeting_hours"])
+        },
+        "action_items_completed": {
+            "value": current_data["action_items_completed"],
+            "change": calculate_change(current_data["action_items_completed"], previous_data["action_items_completed"])
+        }
+    }
+
+    return report
+
 @router.get("/auth/google/login")
 async def login_google():
     """Redirects the user to Google's OAuth 2.0 login page."""
@@ -186,3 +220,17 @@ async def auth_google_callback(request: Request, code: str):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {e}")
+
+@router.put('/meetings/{meeting_id}')
+async def update_meeting_action_items(current_user: User = Depends(get_current_user), request: Request = None):
+    """Updates action items for a specific meeting."""
+    data = await request.json()
+    updated_action_items = data.get("updatedActionItems", [])
+    meeting_id = updated_action_items[0]["meeting_id"] if updated_action_items else None
+    
+    updated_meeting = update_action_items(meeting_id, updated_action_items)
+    
+    if updated_meeting:
+        return {"message": "Meeting action items updated successfully", "success": True, "data": updated_meeting}
+    else:
+        return {"error": "Failed to update meeting action items", "success": False}
