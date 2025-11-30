@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ import {
   Download,
   Calendar,
 } from "lucide-react";
+import { useMeetings } from "@/hooks/useMeetings";
 
 const reportDataByTimeRange = {
   week: {
@@ -112,7 +113,12 @@ const actionItemsStatus = [
 ];
 
 export default function ReportsPage() {
-  const [timeRange, setTimeRange] = useState("month");
+  const [timeRange, setTimeRange] = useState<string>("month");
+  const { meetingReport, getMeetingReport } = useMeetings();
+
+  useEffect(() => {
+    getMeetingReport(timeRange);
+  }, [timeRange]);
 
   const reportData =
     reportDataByTimeRange[timeRange as keyof typeof reportDataByTimeRange];
@@ -137,25 +143,25 @@ export default function ReportsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
-              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="week">Weekly</SelectItem>
+              <SelectItem value="month">Monthly</SelectItem>
+              <SelectItem value="quarter">Quarterly</SelectItem>
+              <SelectItem value="year">Yearly</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
+          {/* <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export CSV
-          </Button>
+          </Button> */}
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -165,26 +171,28 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {reportData.totalMeetings.value}
+              {meetingReport?.total_meetings.value}
             </div>
             <p className="text-xs text-muted-foreground">
               {reportData.totalMeetings.period}
             </p>
             <div
               className={`flex items-center text-xs mt-1 ${
-                reportData.totalMeetings.change >= 0
+                meetingReport && meetingReport.total_meetings.change >= 0
                   ? "text-green-600"
                   : "text-red-600"
               }`}
             >
-              {reportData.totalMeetings.change >= 0 ? (
+              {meetingReport && meetingReport.total_meetings.change >= 0 ? (
                 <TrendingUp className="h-3 w-3 mr-1" />
               ) : (
                 <TrendingDown className="h-3 w-3 mr-1" />
               )}
               <span>
-                {reportData.totalMeetings.change >= 0 ? "+" : ""}
-                {reportData.totalMeetings.change}%
+                {meetingReport && meetingReport.total_meetings.change >= 0
+                  ? "+"
+                  : ""}
+                {meetingReport?.total_meetings.change}%
               </span>
             </div>
           </CardContent>
@@ -197,26 +205,26 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {reportData.totalHours.value}h
+              {meetingReport?.total_hours.value}h
             </div>
-            <p className="text-xs text-muted-foreground">
-              {reportData.totalHours.period}
-            </p>
+            <p className="text-xs text-muted-foreground">this {timeRange}</p>
             <div
               className={`flex items-center text-xs mt-1 ${
-                reportData.totalHours.change >= 0
+                meetingReport && meetingReport.total_hours.change >= 0
                   ? "text-green-600"
                   : "text-red-600"
               }`}
             >
-              {reportData.totalHours.change >= 0 ? (
+              {meetingReport && meetingReport?.total_hours.change >= 0 ? (
                 <TrendingUp className="h-3 w-3 mr-1" />
               ) : (
                 <TrendingDown className="h-3 w-3 mr-1" />
               )}
               <span>
-                {reportData.totalHours.change >= 0 ? "+" : ""}
-                {reportData.totalHours.change}%
+                {meetingReport && meetingReport?.total_hours.change >= 0
+                  ? "+"
+                  : ""}
+                {meetingReport?.total_hours.change}%
               </span>
             </div>
           </CardContent>
@@ -231,32 +239,35 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {reportData.actionItemsCompleted.value}
+              {meetingReport?.action_items_completed.value}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {reportData.actionItemsCompleted.period}
-            </p>
+            <p className="text-xs text-muted-foreground">this {timeRange}</p>
             <div
               className={`flex items-center text-xs mt-1 ${
-                reportData.actionItemsCompleted.change >= 0
+                meetingReport &&
+                meetingReport?.action_items_completed.change >= 0
                   ? "text-green-600"
                   : "text-red-600"
               }`}
             >
-              {reportData.actionItemsCompleted.change >= 0 ? (
+              {meetingReport &&
+              meetingReport?.action_items_completed.change >= 0 ? (
                 <TrendingUp className="h-3 w-3 mr-1" />
               ) : (
                 <TrendingDown className="h-3 w-3 mr-1" />
               )}
               <span>
-                {reportData.actionItemsCompleted.change >= 0 ? "+" : ""}
-                {reportData.actionItemsCompleted.change}%
+                {meetingReport &&
+                meetingReport?.action_items_completed.change >= 0
+                  ? "+"
+                  : ""}
+                {meetingReport?.action_items_completed.change}%
               </span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Engagement Rate
@@ -288,12 +299,12 @@ export default function ReportsPage() {
               </span>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="flex justify-center items-center">
         {/* Meeting Trends Chart */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Meeting Trends</CardTitle>
           </CardHeader>
@@ -327,10 +338,10 @@ export default function ReportsPage() {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Action Items Status */}
-        <Card>
+        <Card className="w-[50%]">
           <CardHeader>
             <CardTitle>Action Items Breakdown</CardTitle>
           </CardHeader>

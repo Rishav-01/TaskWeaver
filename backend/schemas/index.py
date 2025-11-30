@@ -46,3 +46,8 @@ class Token(BaseModel):
 class UserLoginModel(BaseModel):
     email: str
     password: str
+
+class MeetingReport(BaseModel):
+    total_meetings: dict[str, int]
+    total_hours: dict[str, float]
+    action_items_completed: dict[str, int]

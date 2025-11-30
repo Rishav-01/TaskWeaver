@@ -20,3 +20,18 @@ export interface Meeting {
   participants: string[];
   action_items: ActionItems[];
 }
+
+export interface MeetingReport {
+  total_meetings: { value: number; change: number };
+  total_hours: { value: number; change: number };
+  action_items_completed: { value: number; change: number };
+}
+
+export interface CheckedItemObject {
+  meeting_id: string;
+  description: string;
+  assigned_to: string;
+  due_date: string;
+  priority: "low" | "medium" | "high";
+  status: "pending" | "completed" | "in-progress";
+}

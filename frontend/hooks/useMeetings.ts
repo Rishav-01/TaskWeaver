@@ -1,5 +1,9 @@
 import { meetingService } from "@/services/meetingService";
-import { Meeting } from "@/types/meetingsType";
+import {
+  CheckedItemObject,
+  Meeting,
+  MeetingReport,
+} from "@/types/meetingsType";
 import { useEffect, useState } from "react";
 import {
   Users,
@@ -58,6 +62,15 @@ export const useMeetings = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedMeeting, setUploadedMeeting] = useState<Meeting | null>(null);
+
+  // Meeting Report
+  const [meetingReport, setMeetingReport] = useState<MeetingReport | null>(
+    null
+  );
+  const [isLoadingMeetingReport, setIsLoadingMeetingReport] = useState(false);
+  const [isErrorInMeetingReport, setIsErrorInMeetingReport] = useState<
+    string | null
+  >(null);
 
   const getMeetings = async () => {
     setIsLoadingMeetings(true);
@@ -153,6 +166,30 @@ export const useMeetings = () => {
     }
   };
 
+  const getMeetingReport = async (timeRange: string) => {
+    setIsLoadingMeetingReport(true);
+    try {
+      const report = await meetingService.getMeetingReport(timeRange);
+      setMeetingReport(report);
+    } catch (error) {
+      setIsErrorInMeetingReport("Failed to fetch meeting report");
+      throw error;
+    } finally {
+      setIsLoadingMeetingReport(false);
+    }
+  };
+
+  const updateMeetingActionItems = async (
+    updatedActionItems: CheckedItemObject[]
+  ) => {
+    try {
+      await meetingService.updateMeetingActionItems(updatedActionItems);
+      await getMeetings();
+    } catch (error) {
+      console.error("Error updating meeting action items:", error);
+    }
+  };
+
   useEffect(() => {
     getMeetings();
   }, []);
@@ -174,5 +211,10 @@ export const useMeetings = () => {
     uploadError,
     uploadedMeeting,
     averageMeetingTime,
+    getMeetingReport,
+    meetingReport,
+    isLoadingMeetingReport,
+    isErrorInMeetingReport,
+    updateMeetingActionItems,
   };
 };

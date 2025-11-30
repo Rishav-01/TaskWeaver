@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +46,7 @@ import {
 } from "lucide-react";
 import { useMeetings } from "@/hooks/useMeetings";
 import { useParams } from "next/navigation";
+import { CheckedItemObject } from "@/types/meetingsType";
 
 const statusColors = {
   pending:
@@ -64,10 +66,50 @@ const priorityColors = {
 
 export default function MeetingDetailPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [checkedItems, setCheckedItems] = useState<CheckedItemObject[]>([]);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const { id: meetingId } = useParams();
-  const { getMeetingById, isLoadingMeeting, isErrorinMeeting, meeting } =
-    useMeetings();
+  const {
+    getMeetingById,
+    isLoadingMeeting,
+    isErrorinMeeting,
+    meeting,
+    updateMeetingActionItems,
+  } = useMeetings();
+
+  useEffect(() => {
+    if (meeting) {
+      const completedItems = meeting.action_items.map((item) => ({
+        meeting_id: meetingId as string,
+        description: item.description,
+        assigned_to: item.assigned_to,
+        due_date: item.due_date,
+        priority: item.priority,
+        status: item.status,
+      }));
+      setCheckedItems(completedItems);
+    }
+  }, [meeting, meetingId]);
+
+  const handleCheckedChange = (item: any, checked: boolean) => {
+    setCheckedItems((prevItems) => {
+      return prevItems.map((prevItem) => {
+        if (prevItem.description === item.description) {
+          // If the item is found, update its status based on the checkbox
+          return { ...prevItem, status: checked ? "completed" : "pending" };
+        }
+        // Otherwise, return the item unchanged
+        return prevItem;
+      });
+    });
+  };
+
+  const handleUpdateStatus = () => {
+    // Logic to update status of selected action items
+    updateMeetingActionItems(checkedItems);
+    setCheckedItems([]);
+    getMeetingById(meetingId as string);
+  };
 
   useEffect(() => {
     if (meetingId) {
@@ -242,38 +284,43 @@ export default function MeetingDetailPage() {
                 </div>
               </DialogContent>
             </Dialog> */}
+            <Button
+              disabled={
+                checkedItems.length === 0 ||
+                checkedItems.every((item) => item.status === "completed")
+              }
+              onClick={handleUpdateStatus}
+            >
+              Update Status
+            </Button>
           </div>
 
           <div className="space-y-3">
             {meeting?.action_items.map((item) => (
-              <Card key={item.description}>
-                <CardContent className="pt-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="mt-1">
-                      {item.status === "completed" ? (
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      ) : item.status === "in-progress" ? (
-                        <AlertCircle className="h-5 w-5 text-blue-600" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-yellow-600" />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between">
-                        <p className="font-medium">{item.description}</p>
-                        <div className="flex items-center space-x-2">
-                          <Badge
-                            className={
-                              priorityColors[
-                                item.priority as keyof typeof priorityColors
-                              ]
-                            }
-                          >
-                            {item.priority}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <Card key={item.description} className="p-4">
+                <div className="flex items-start space-x-4">
+                  <Checkbox
+                    id={item.description}
+                    checked={checkedItems.some(
+                      (checkedItem) =>
+                        checkedItem.description === item.description &&
+                        checkedItem.status === "completed"
+                    )}
+                    disabled={item.status === "completed"}
+                    onCheckedChange={(checked) =>
+                      handleCheckedChange(item, !!checked)
+                    }
+                    className="mt-1"
+                  />
+                  <div className="flex-1 space-y-2">
+                    <label
+                      htmlFor={item.description}
+                      className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {item.description}
+                    </label>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1">
                           <Avatar className="h-5 w-5">
                             <AvatarFallback className="text-xs">
@@ -291,17 +338,28 @@ export default function MeetingDetailPage() {
                         </div>
                         <Badge
                           className={
+                            priorityColors[
+                              item.priority as keyof typeof priorityColors
+                            ]
+                          }
+                        >
+                          {item.priority}
+                        </Badge>
+                      </div>
+                      <div>
+                        <Badge
+                          className={
                             statusColors[
                               item.status as keyof typeof statusColors
                             ]
                           }
                         >
-                          {item.status.replace("-", " ")}
+                          {item?.status?.replace("-", " ")}
                         </Badge>
                       </div>
                     </div>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>

@@ -1,4 +1,8 @@
-import { Meeting } from "@/types/meetingsType";
+import {
+  CheckedItemObject,
+  Meeting,
+  MeetingReport,
+} from "@/types/meetingsType";
 
 interface GetMeetingsByUserApiResponse {
   message: string;
@@ -102,6 +106,59 @@ class MeetingService {
       return await response.json();
     } catch (error) {
       console.error("Error uploading meeting:", error);
+      throw error;
+    }
+  };
+
+  getMeetingReport = async (timeRange: string): Promise<MeetingReport> => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const queryParams = timeRange ? `?timeRange=${timeRange}` : "";
+
+    try {
+      const response = await fetch(
+        `${this.VITE_API_URL}/report${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch meeting report");
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  updateMeetingActionItems = async (
+    updatedActionItems: CheckedItemObject[]
+  ): Promise<void> => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+    try {
+      const response = await fetch(
+        `${this.VITE_API_URL}/meetings/${updatedActionItems[0].meeting_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ updatedActionItems: updatedActionItems }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update meeting action items");
+      }
+    } catch (error) {
       throw error;
     }
   };
