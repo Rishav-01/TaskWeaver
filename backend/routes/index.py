@@ -225,8 +225,8 @@ async def auth_google_callback(request: Request, code: str):
 async def update_meeting_action_items(current_user: User = Depends(get_current_user), request: Request = None):
     """Updates action items for a specific meeting."""
     data = await request.json()
-    updated_action_items = data.get("updatedActionItems", [])
-    meeting_id = updated_action_items[0]["meeting_id"] if updated_action_items else None
+    updated_action_items: list[dict] = data.get("actionItems", [])
+    meeting_id = data["meetingId"]
     
     updated_meeting = update_action_items(meeting_id, updated_action_items)
     

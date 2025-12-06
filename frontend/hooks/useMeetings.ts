@@ -180,7 +180,7 @@ export const useMeetings = () => {
   };
 
   const updateMeetingActionItems = async (
-    updatedActionItems: CheckedItemObject[]
+    updatedActionItems: CheckedItemObject
   ) => {
     try {
       await meetingService.updateMeetingActionItems(updatedActionItems);

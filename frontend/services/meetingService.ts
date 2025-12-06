@@ -138,20 +138,23 @@ class MeetingService {
   };
 
   updateMeetingActionItems = async (
-    updatedActionItems: CheckedItemObject[]
+    updatedActionItems: CheckedItemObject
   ): Promise<void> => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
     try {
       const response = await fetch(
-        `${this.VITE_API_URL}/meetings/${updatedActionItems[0].meeting_id}`,
+        `${this.VITE_API_URL}/meetings/${updatedActionItems.meeting_id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ updatedActionItems: updatedActionItems }),
+          body: JSON.stringify({
+            meetingId: updatedActionItems.meeting_id,
+            actionItems: updatedActionItems.updated_action_items,
+          }),
         }
       );
 
