@@ -26,6 +26,8 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -46,7 +48,8 @@ import {
 } from "lucide-react";
 import { useMeetings } from "@/hooks/useMeetings";
 import { useParams } from "next/navigation";
-import { CheckedItemObject } from "@/types/meetingsType";
+import { ActionItems, CheckedItemObject } from "@/types/meetingsType";
+import { Snackbar } from "@/components/common/Snackbar";
 
 const statusColors = {
   pending:
@@ -66,8 +69,9 @@ const priorityColors = {
 
 export default function MeetingDetailPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [checkedItems, setCheckedItems] = useState<CheckedItemObject[]>([]);
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [actionItems, setActionItems] = useState<ActionItems[]>([]);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [updatingTask, setUpdatingTask] = useState<ActionItems | null>(null);
   const { id: meetingId } = useParams();
   const {
     getMeetingById,
@@ -78,44 +82,46 @@ export default function MeetingDetailPage() {
   } = useMeetings();
 
   useEffect(() => {
-    if (meeting) {
-      const completedItems = meeting.action_items.map((item) => ({
-        meeting_id: meetingId as string,
-        description: item.description,
-        assigned_to: item.assigned_to,
-        due_date: item.due_date,
-        priority: item.priority,
-        status: item.status,
-      }));
-      setCheckedItems(completedItems);
-    }
-  }, [meeting, meetingId]);
-
-  const handleCheckedChange = (item: any, checked: boolean) => {
-    setCheckedItems((prevItems) => {
-      return prevItems.map((prevItem) => {
-        if (prevItem.description === item.description) {
-          // If the item is found, update its status based on the checkbox
-          return { ...prevItem, status: checked ? "completed" : "pending" };
-        }
-        // Otherwise, return the item unchanged
-        return prevItem;
-      });
-    });
-  };
-
-  const handleUpdateStatus = () => {
-    // Logic to update status of selected action items
-    updateMeetingActionItems(checkedItems);
-    setCheckedItems([]);
     getMeetingById(meetingId as string);
-  };
+  }, [meetingId]);
 
   useEffect(() => {
-    if (meetingId) {
-      getMeetingById(meetingId as string);
+    if (meeting) {
+      setActionItems(meeting.action_items);
     }
-  }, [meetingId]);
+  }, [meeting]);
+
+  const handleActionItemStatusChange = (
+    actionItemId: string,
+    status: "completed" | "pending" | "in-progress"
+  ) => {
+    setActionItems((prev) =>
+      prev.map((item) =>
+        item.id === actionItemId ? { ...item, status: status } : item
+      )
+    );
+    setUpdatingTask((prev) =>
+      prev && prev.id === actionItemId ? { ...prev, status: status } : prev
+    );
+  };
+
+  const handleUpdateActionItems = async () => {
+    try {
+      await updateMeetingActionItems({
+        meeting_id: meetingId as string,
+        updated_action_items: actionItems,
+      });
+      await getMeetingById(meetingId as string);
+      Snackbar.success("Action items updated successfully!");
+    } catch (error) {
+      console.error("Failed to update action items:", error);
+      Snackbar.error("Failed to update action items.");
+    }
+  };
+
+  const allItemsCompleted =
+    actionItems.length > 0 &&
+    actionItems.every((item) => item.status === "completed");
 
   return (
     <div className="space-y-6">
@@ -214,13 +220,9 @@ export default function MeetingDetailPage() {
                 {meeting?.action_items.length} items extracted by AI
               </p>
             </div>
+
+            {/* For now, the "Add New Action Item" dialog is commented out. */}
             {/* <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Task
-                </Button>
-              </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Add New Action Item</DialogTitle>
@@ -284,84 +286,139 @@ export default function MeetingDetailPage() {
                 </div>
               </DialogContent>
             </Dialog> */}
-            <Button
-              disabled={
-                checkedItems.length === 0 ||
-                checkedItems.every((item) => item.status === "completed")
-              }
-              onClick={handleUpdateStatus}
-            >
-              Update Status
-            </Button>
+
+            {/* For Updating Action Item Statuses */}
+            <Dialog open={isUpdatingStatus} onOpenChange={setIsUpdatingStatus}>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Update Action Item Status</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <p className="text-sm p-4 bg-muted rounded-lg">
+                    {updatingTask?.description}
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={updatingTask?.status || "pending"}
+                      onValueChange={(value) =>
+                        handleActionItemStatusChange(
+                          updatingTask?.id || "",
+                          value as "completed" | "pending" | "in-progress"
+                        )
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsUpdatingStatus(false);
+                      setUpdatingTask(null);
+                    }}
+                  >
+                    Done
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button onClick={handleUpdateActionItems}>Update Status</Button>
           </div>
 
           <div className="space-y-3">
-            {meeting?.action_items.map((item) => (
-              <Card key={item.description} className="p-4">
-                <div className="flex items-start space-x-4">
-                  <Checkbox
-                    id={item.description}
-                    checked={checkedItems.some(
-                      (checkedItem) =>
-                        checkedItem.description === item.description &&
-                        checkedItem.status === "completed"
-                    )}
-                    disabled={item.status === "completed"}
-                    onCheckedChange={(checked) =>
-                      handleCheckedChange(item, !!checked)
-                    }
-                    className="mt-1"
-                  />
-                  <div className="flex-1 space-y-2">
-                    <label
-                      htmlFor={item.description}
-                      className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {item.description}
-                    </label>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1">
-                          <Avatar className="h-5 w-5">
-                            <AvatarFallback className="text-xs">
-                              {item.assigned_to
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>{item.assigned_to}</span>
+            {meeting?.action_items.map((item) => {
+              const duplicateItem = actionItems.find(
+                (actionItem) => actionItem.id === item.id
+              );
+              const hasStatusChanged =
+                duplicateItem && duplicateItem.status !== item.status;
+
+              return (
+                <Card
+                  key={item.id}
+                  className="p-4 cursor-pointer hover:bg-muted/50"
+                  onClick={() => {
+                    setIsUpdatingStatus(true);
+                    setUpdatingTask(item);
+                  }}
+                >
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-1 space-y-2">
+                      <label
+                        htmlFor={item.id}
+                        className={`font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
+                          item.status === "completed" ? "line-through" : ""
+                        }`}
+                      >
+                        {item.description}
+                      </label>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-1">
+                            <Avatar className="h-5 w-5">
+                              <AvatarFallback className="text-xs">
+                                {item.assigned_to
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span>{item.assigned_to}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>Due {item.due_date}</span>
+                          </div>
+                          <Badge
+                            className={
+                              priorityColors[
+                                item.priority as keyof typeof priorityColors
+                              ]
+                            }
+                          >
+                            {item.priority}
+                          </Badge>
+                          {hasStatusChanged && (
+                            <span className="text-blue-600 dark:text-blue-400">
+                              Changing status to{" -> "}
+                              {duplicateItem.status.replace("-", " ")}
+                            </span>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>Due {item.due_date}</span>
+                        <div>
+                          <Badge
+                            className={
+                              statusColors[
+                                item.status as keyof typeof statusColors
+                              ]
+                            }
+                          >
+                            {item.status === "completed" ? (
+                              <CheckCircle className="mr-1 h-3 w-3" />
+                            ) : item.status === "in-progress" ? (
+                              <AlertCircle className="mr-1 h-3 w-3" />
+                            ) : (
+                              <Circle className="mr-1 h-3 w-3" />
+                            )}
+                            {item?.status?.replace("-", " ")}
+                          </Badge>
                         </div>
-                        <Badge
-                          className={
-                            priorityColors[
-                              item.priority as keyof typeof priorityColors
-                            ]
-                          }
-                        >
-                          {item.priority}
-                        </Badge>
-                      </div>
-                      <div>
-                        <Badge
-                          className={
-                            statusColors[
-                              item.status as keyof typeof statusColors
-                            ]
-                          }
-                        >
-                          {item?.status?.replace("-", " ")}
-                        </Badge>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 

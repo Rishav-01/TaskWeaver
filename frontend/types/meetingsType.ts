@@ -1,4 +1,4 @@
-interface ActionItems {
+export interface ActionItems {
   id: string;
   status: "pending" | "completed" | "in-progress";
   assigned_to: string;
@@ -29,9 +29,5 @@ export interface MeetingReport {
 
 export interface CheckedItemObject {
   meeting_id: string;
-  description: string;
-  assigned_to: string;
-  due_date: string;
-  priority: "low" | "medium" | "high";
-  status: "pending" | "completed" | "in-progress";
+  updated_action_items: ActionItems[];
 }

@@ -28,7 +28,10 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   const navigate = useRouter();
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card
+      className="hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => navigate.push(`meetings/${meeting.id}`)}
+    >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <CardTitle className="text-base">{meeting.title}</CardTitle>
@@ -37,7 +40,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             <span>{meeting.date}</span>
           </div>
         </div>
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <MoreHorizontal className="h-4 w-4" />
@@ -52,7 +55,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             <DropdownMenuItem>Edit Meeting</DropdownMenuItem>
             <DropdownMenuItem>Download Transcript</DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
