@@ -5,7 +5,7 @@ import {
 } from "@/types/authType";
 
 class AuthService {
-  private VITE_API_URL: string = "http://localhost:8000";
+  private VITE_API_URL: string = process.env.VITE_API_URL!;
 
   async login(loginData: LoginData) {
     try {

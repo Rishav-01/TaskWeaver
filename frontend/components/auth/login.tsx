@@ -20,6 +20,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const VITE_API_URL: string = process.env.VITE_API_URL!;
 
   const {
     register,
@@ -45,7 +46,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
 
   const handleGoogleLogin = () => {
     // Redirect user to the backend, which then redirects to Google
-    window.location.href = "http://localhost:8000/auth/google/login";
+    window.location.href = `${VITE_API_URL}/auth/google/login`;
   };
 
   return (
