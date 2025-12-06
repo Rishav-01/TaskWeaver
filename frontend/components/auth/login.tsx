@@ -20,7 +20,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const VITE_API_URL: string = process.env.VITE_API_URL!;
+  const VITE_API_URL: string = process.env.NEXT_PUBLIC_API_URL!;
 
   const {
     register,
