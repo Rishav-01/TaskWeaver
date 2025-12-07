@@ -185,7 +185,7 @@ export default function MeetingsPage() {
                       </div>
                     </TableCell>
                     <TableCell>{meeting.duration}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -207,7 +207,7 @@ export default function MeetingsPage() {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Snackbar } from "@/components/common/Snackbar";
+import { useMeetingContext } from "@/context/MeetingContext";
 
 const sampleParticipants = [
   { name: "John Doe", email: "john@example.com", role: "Product Manager" },
@@ -40,7 +41,7 @@ export default function UploadMeetingPage() {
   const [participants, setParticipants] = useState(sampleParticipants);
   const [autoExtract, setAutoExtract] = useState(true);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const { uploadMeeting, isUploading } = useMeetings();
+  const { uploadMeeting, isUploading, getMeetings } = useMeetingContext();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -78,6 +79,7 @@ export default function UploadMeetingPage() {
 
       // Handle success (e.g., show a success message or redirect)
       Snackbar.success("Meeting uploaded successfully!");
+      await getMeetings();
       router.push("/dashboard");
     } catch (e) {
       // Error is already handled in the hook, but you can add page-specific logic here
@@ -85,6 +87,7 @@ export default function UploadMeetingPage() {
       Snackbar.error("An error occurred while processing the meeting.");
       console.error(e);
     } finally {
+      setUploadedFile(null);
       setIsProcessing(false);
     }
   };
