@@ -1,5 +1,6 @@
 "use client";
 
+import ReportsLoading from "./loading";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ import {
   Download,
   Calendar,
 } from "lucide-react";
-import { useMeetings } from "@/hooks/useMeetings";
+import { useMeetingContext } from "@/context/MeetingContext";
 
 const reportDataByTimeRange = {
   week: {
@@ -114,7 +115,8 @@ const actionItemsStatus = [
 
 export default function ReportsPage() {
   const [timeRange, setTimeRange] = useState<string>("month");
-  const { meetingReport, getMeetingReport } = useMeetings();
+  const { meetingReport, getMeetingReport, isLoadingMeetingReport } =
+    useMeetingContext();
 
   useEffect(() => {
     getMeetingReport(timeRange);
@@ -127,6 +129,10 @@ export default function ReportsPage() {
       timeRange as keyof typeof meetingTrendsByTimeRange
     ];
   const maxMeetings = Math.max(...meetingTrends.data.map((t) => t.meetings), 1);
+
+  if (isLoadingMeetingReport) {
+    return <ReportsLoading />;
+  }
 
   return (
     <div className="space-y-6">
