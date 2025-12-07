@@ -341,7 +341,7 @@ export default function ReportsPage() {
         </Card> */}
 
         {/* Action Items Status */}
-        <Card className="w-[50%]">
+        {/* <Card className="w-[50%]">
           <CardHeader>
             <CardTitle>Action Items Breakdown</CardTitle>
           </CardHeader>
@@ -389,7 +389,7 @@ export default function ReportsPage() {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Top Participants */}
