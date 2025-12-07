@@ -50,6 +50,7 @@ import { useMeetings } from "@/hooks/useMeetings";
 import { useParams } from "next/navigation";
 import { ActionItems, CheckedItemObject } from "@/types/meetingsType";
 import { Snackbar } from "@/components/common/Snackbar";
+import { useMeetingContext } from "@/context/MeetingContext";
 
 const statusColors = {
   pending:
@@ -79,7 +80,7 @@ export default function MeetingDetailPage() {
     isErrorinMeeting,
     meeting,
     updateMeetingActionItems,
-  } = useMeetings();
+  } = useMeetingContext();
 
   useEffect(() => {
     getMeetingById(meetingId as string);

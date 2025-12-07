@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import { Inter } from "next/font/google";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
+import { MeetingProvider } from "@/context/MeetingContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,9 +31,11 @@ export default function DashboardLayout({
               </div>
               <div className="flex flex-1 flex-col overflow-hidden">
                 <Header />
-                <main className="flex-1 overflow-y-auto bg-muted/10 p-6">
-                  {children}
-                </main>
+                <MeetingProvider>
+                  <main className="flex-1 overflow-y-auto bg-muted/10 p-6">
+                    {children}
+                  </main>
+                </MeetingProvider>
               </div>
             </div>
           </ThemeProvider>

@@ -39,6 +39,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMeetings } from "@/hooks/useMeetings";
+import { useMeetingContext } from "@/context/MeetingContext";
 
 const statusColors = {
   completed:
@@ -53,13 +54,9 @@ export default function MeetingsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const { getMeetings, meetings, isLoadingMeetings, isErrorinMeetings } =
-    useMeetings();
+    useMeetingContext();
 
   const navigate = useRouter();
-
-  useEffect(() => {
-    getMeetings();
-  }, []);
 
   return (
     <div className="space-y-6">

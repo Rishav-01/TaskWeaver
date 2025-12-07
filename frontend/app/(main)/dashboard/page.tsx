@@ -15,16 +15,11 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DashboardLoading from "./loading";
+import { useMeetingContext } from "@/context/MeetingContext";
 
 export default function DashboardPage() {
-  const {
-    meetings,
-    setIsLoadingMeetings,
-    setIsErrorInMeetings,
-    meetingStats,
-    averageMeetingTime,
-    isLoadingMeetings,
-  } = useMeetings();
+  const { meetings, meetingStats, averageMeetingTime, isLoadingMeetings } =
+    useMeetingContext();
 
   const navigate = useRouter();
 
