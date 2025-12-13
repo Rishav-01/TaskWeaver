@@ -81,7 +81,7 @@ def get_meeting_report(user_email: str, start_date: datetime, end_date: datetime
                     total_action_items += 1
                     if item.get("status") == "completed":
                         action_items_completed += 1
-                    elif item.get("status") == "in_progress":
+                    elif item.get("status") == "in-progress":
                         action_items_in_progress += 1
                     else:
                         action_items_pending += 1
