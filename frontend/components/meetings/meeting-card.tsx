@@ -81,7 +81,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
                   {participant
                     .split(" ")
                     .map((n) => n[0])
-                    .join("")}
+                    .at(0)}
                 </AvatarFallback>
               </Avatar>
             ))}
