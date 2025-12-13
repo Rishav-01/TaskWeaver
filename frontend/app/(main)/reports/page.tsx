@@ -130,6 +130,47 @@ export default function ReportsPage() {
     ];
   const maxMeetings = Math.max(...meetingTrends.data.map((t) => t.meetings), 1);
 
+  const calculatePercentage = (part: number, total: number) => {
+    return total === 0 ? 0 : Math.round((part / total) * 100);
+  };
+
+  const [totalActionItems, setTotalActionItems] = useState<number>(0);
+  const [actionItemsPendingPercentage, setActionItemsPendingPercentage] =
+    useState<number>(0);
+  const [actionItemsInProgressPercentage, setActionItemsInProgressPercentage] =
+    useState<number>(0);
+  const [actionItemsCompletedPercentage, setActionItemsCompletedPercentage] =
+    useState<number>(0);
+
+  useEffect(() => {
+    if (meetingReport) {
+      const totalActionItems = meetingReport.total_action_items?.value;
+      setTotalActionItems(totalActionItems);
+      setActionItemsPendingPercentage(
+        calculatePercentage(
+          meetingReport.action_items_pending?.value,
+          totalActionItems
+        )
+      );
+      setActionItemsInProgressPercentage(
+        calculatePercentage(
+          meetingReport.action_items_in_progress?.value,
+          totalActionItems
+        )
+      );
+      setActionItemsCompletedPercentage(
+        calculatePercentage(
+          meetingReport.action_items_completed?.value,
+          totalActionItems
+        )
+      );
+    }
+  }, [meetingReport]);
+
+  if (!meetingReport) {
+    return null;
+  }
+
   if (isLoadingMeetingReport) {
     return <ReportsLoading />;
   }
@@ -347,13 +388,13 @@ export default function ReportsPage() {
         </Card> */}
 
         {/* Action Items Status */}
-        {/* <Card className="w-[50%]">
+        <Card className="w-[50%]">
           <CardHeader>
             <CardTitle>Action Items Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {actionItemsStatus.map((item, index) => (
+              {/* {actionItemsStatus.map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div
@@ -392,10 +433,78 @@ export default function ReportsPage() {
                     </span>
                   </div>
                 </div>
-              ))}
+              ))} */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="h-3 w-3 rounded-full bg-green-500 " />
+                  <span className="text-sm font-medium">Completed</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-green-500"
+                      style={{
+                        width: `${actionItemsCompletedPercentage}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium w-8">
+                    {meetingReport?.action_items_completed.value}
+                  </span>
+                  <span className="text-sm text-muted-foreground w-8">
+                    {actionItemsCompletedPercentage}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="h-3 w-3 rounded-full bg-blue-500 " />
+                  <span className="text-sm font-medium">In Progress</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-blue-500"
+                      style={{
+                        width: `${actionItemsInProgressPercentage}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium w-8">
+                    {meetingReport?.action_items_in_progress?.value}
+                  </span>
+                  <span className="text-sm text-muted-foreground w-8">
+                    {actionItemsInProgressPercentage}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="h-3 w-3 rounded-full bg-orange-500 " />
+                  <span className="text-sm font-medium">Pending</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-orange-500"
+                      style={{
+                        width: `${actionItemsPendingPercentage}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium w-8">
+                    {meetingReport?.action_items_pending?.value}
+                  </span>
+                  <span className="text-sm text-muted-foreground w-8">
+                    {actionItemsPendingPercentage}%
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
-        </Card> */}
+        </Card>
       </div>
 
       {/* Top Participants */}
