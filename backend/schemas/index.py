@@ -51,3 +51,6 @@ class MeetingReport(BaseModel):
     total_meetings: dict[str, int]
     total_hours: dict[str, float]
     action_items_completed: dict[str, int]
+    action_items_in_progress: dict[str, int]
+    action_items_pending: dict[str, int]
+    total_action_items: dict[str, int]

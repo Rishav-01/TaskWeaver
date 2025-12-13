@@ -68,6 +68,9 @@ def get_meeting_report(user_email: str, start_date: datetime, end_date: datetime
         total_meetings = 0
         total_duration = 0
         action_items_completed = 0
+        action_items_pending = 0
+        action_items_in_progress = 0
+        total_action_items = 0
         meetings_list = list(meetings_cursor)
         total_meetings = len(meetings_list)
 
@@ -75,13 +78,21 @@ def get_meeting_report(user_email: str, start_date: datetime, end_date: datetime
             total_duration += meeting["duration"]
             if "action_items" in meeting:
                 for item in meeting["action_items"]:
+                    total_action_items += 1
                     if item.get("status") == "completed":
                         action_items_completed += 1
+                    elif item.get("status") == "in_progress":
+                        action_items_in_progress += 1
+                    else:
+                        action_items_pending += 1
 
         return {
             "total_meetings": total_meetings,
             "meeting_hours": round(total_duration / 60, 2),
-            "action_items_completed": action_items_completed
+            "action_items_completed": action_items_completed,
+            "action_items_in_progress": action_items_in_progress,
+            "action_items_pending": action_items_pending,
+            "total_action_items": total_action_items
         }
     
     except Exception as e:

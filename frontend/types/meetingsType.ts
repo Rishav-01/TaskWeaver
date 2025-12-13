@@ -25,6 +25,9 @@ export interface MeetingReport {
   total_meetings: { value: number; change: number };
   total_hours: { value: number; change: number };
   action_items_completed: { value: number; change: number };
+  action_items_in_progress: { value: number; change: number };
+  action_items_pending: { value: number; change: number };
+  total_action_items: { value: number; change: number };
 }
 
 export interface CheckedItemObject {

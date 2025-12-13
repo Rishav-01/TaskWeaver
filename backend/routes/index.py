@@ -159,7 +159,19 @@ async def report(time_range: str = "month", current_user: User = Depends(get_cur
         "action_items_completed": {
             "value": current_data["action_items_completed"],
             "change": calculate_change(current_data["action_items_completed"], previous_data["action_items_completed"])
-        }
+        },
+        "action_items_pending": {
+            "value": current_data["action_items_pending"],
+            "change": calculate_change(current_data["action_items_pending"], previous_data["action_items_pending"])
+        },
+        "action_items_in_progress": {
+            "value": current_data["action_items_in_progress"],
+            "change": calculate_change(current_data["action_items_in_progress"], previous_data["action_items_in_progress"])
+        },
+        "total_action_items": {
+            "value": current_data["total_action_items"],
+            "change": calculate_change(current_data["total_action_items"], previous_data["total_action_items"])
+        },
     }
 
     return report
