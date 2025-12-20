@@ -142,28 +142,70 @@ export default function ReportsPage() {
   const [actionItemsCompletedPercentage, setActionItemsCompletedPercentage] =
     useState<number>(0);
 
+  const [animatedCompletedCount, setAnimatedCompletedCount] =
+    useState<number>(0);
+  const [animatedInProgressCount, setAnimatedInProgressCount] =
+    useState<number>(0);
+  const [animatedPendingCount, setAnimatedPendingCount] = useState<number>(0);
+
   useEffect(() => {
     if (meetingReport) {
-      const totalActionItems = meetingReport.total_action_items?.value;
+      const totalActionItems = meetingReport.total_action_items?.value || 0;
       setTotalActionItems(totalActionItems);
-      setActionItemsPendingPercentage(
-        calculatePercentage(
-          meetingReport.action_items_pending?.value,
-          totalActionItems
-        )
+
+      const completedValue = meetingReport.action_items_completed?.value || 0;
+      const inProgressValue =
+        meetingReport.action_items_in_progress?.value || 0;
+      const pendingValue = meetingReport.action_items_pending?.value || 0;
+
+      const completedPercentage = calculatePercentage(
+        completedValue,
+        totalActionItems
       );
-      setActionItemsInProgressPercentage(
-        calculatePercentage(
-          meetingReport.action_items_in_progress?.value,
-          totalActionItems
-        )
+      const inProgressPercentage = calculatePercentage(
+        inProgressValue,
+        totalActionItems
       );
-      setActionItemsCompletedPercentage(
-        calculatePercentage(
-          meetingReport.action_items_completed?.value,
-          totalActionItems
-        )
+      const pendingPercentage = calculatePercentage(
+        pendingValue,
+        totalActionItems
       );
+
+      let startTimestamp: number | null = null;
+      const duration = 1000;
+
+      const animate = (timestamp: number) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        setAnimatedCompletedCount(Math.floor(easeProgress * completedValue));
+        setAnimatedInProgressCount(Math.floor(easeProgress * inProgressValue));
+        setAnimatedPendingCount(Math.floor(easeProgress * pendingValue));
+
+        setActionItemsCompletedPercentage(
+          Math.floor(easeProgress * completedPercentage)
+        );
+        setActionItemsInProgressPercentage(
+          Math.floor(easeProgress * inProgressPercentage)
+        );
+        setActionItemsPendingPercentage(
+          Math.floor(easeProgress * pendingPercentage)
+        );
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setAnimatedCompletedCount(completedValue);
+          setAnimatedInProgressCount(inProgressValue);
+          setAnimatedPendingCount(pendingValue);
+          setActionItemsCompletedPercentage(completedPercentage);
+          setActionItemsInProgressPercentage(inProgressPercentage);
+          setActionItemsPendingPercentage(pendingPercentage);
+        }
+      };
+
+      requestAnimationFrame(animate);
     }
   }, [meetingReport]);
 
@@ -449,7 +491,7 @@ export default function ReportsPage() {
                     />
                   </div>
                   <span className="text-sm font-medium w-8">
-                    {meetingReport?.action_items_completed.value}
+                    {animatedCompletedCount}
                   </span>
                   <span className="text-sm text-muted-foreground w-8">
                     {actionItemsCompletedPercentage}%
@@ -472,7 +514,7 @@ export default function ReportsPage() {
                     />
                   </div>
                   <span className="text-sm font-medium w-8">
-                    {meetingReport?.action_items_in_progress?.value}
+                    {animatedInProgressCount}
                   </span>
                   <span className="text-sm text-muted-foreground w-8">
                     {actionItemsInProgressPercentage}%
@@ -495,7 +537,7 @@ export default function ReportsPage() {
                     />
                   </div>
                   <span className="text-sm font-medium w-8">
-                    {meetingReport?.action_items_pending?.value}
+                    {animatedPendingCount}
                   </span>
                   <span className="text-sm text-muted-foreground w-8">
                     {actionItemsPendingPercentage}%
