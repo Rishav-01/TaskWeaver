@@ -88,19 +88,19 @@ pip install -r requirements.txt
 ## 🔧 Environment Variables
 
 ### Backend
-MONGO_URI=mongodb://localhost:27017/taskweaver
-GROQ_API_KEY=your_openai_api_key
-SECRET_KEY=your_jwt_secret_key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=60
-MODEL=your_llm_model
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-REDIRECT_URI=http://localhost:8000/auth/google/callback
-FRONTEND_URL=http://localhost:3000
+- MONGO_URI=mongodb://localhost:27017/taskweaver
+- GROQ_API_KEY=your_openai_api_key
+- SECRET_KEY=your_jwt_secret_key
+- ALGORITHM=HS256
+- ACCESS_TOKEN_EXPIRE_MINUTES=60
+- MODEL=your_llm_model
+- GOOGLE_CLIENT_ID=your_google_client_id
+- GOOGLE_CLIENT_SECRET=your_google_client_secret
+- REDIRECT_URI=http://localhost:8000/auth/google/callback
+- FRONTEND_URL=http://localhost:3000
 
 ### Frontend
-NEXT_PUBLIC_API_URL=http://localhost:8000
+- NEXT_PUBLIC_API_URL=http://localhost:8000
 
 
 ## Run Backend Server
