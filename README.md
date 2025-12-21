@@ -87,7 +87,7 @@ pip install -r requirements.txt
 
 ## 🔧 Environment Variables
 
-### Backend
+### Backend (.env)
 - MONGO_URI=mongodb://localhost:27017/taskweaver
 - GROQ_API_KEY=your_openai_api_key
 - SECRET_KEY=your_jwt_secret_key
@@ -99,7 +99,7 @@ pip install -r requirements.txt
 - REDIRECT_URI=http://localhost:8000/auth/google/callback
 - FRONTEND_URL=http://localhost:3000
 
-### Frontend
+### Frontend (.env.local)
 - NEXT_PUBLIC_API_URL=http://localhost:8000
 
 
