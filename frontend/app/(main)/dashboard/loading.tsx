@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Upload } from "lucide-react";
 
 export default function DashboardLoading() {
   return (
@@ -13,8 +13,8 @@ export default function DashboardLoading() {
           <Skeleton className="h-5 w-80 mt-2" />
         </div>
         <Button disabled>
-          <Plus className="mr-2 h-4 w-4" />
-          New Meeting
+          <Upload className="mr-2 h-4 w-4" />
+          Upload Meeting
         </Button>
       </div>
 
