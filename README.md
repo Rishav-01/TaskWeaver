@@ -59,7 +59,7 @@ Built using **Next.js, FastAPI, LangChain, and MongoDB**, TaskWeaver is designed
 ### AI / Gen-AI
 - Large Language Models (LLMs)
 - Prompt-based summarization
-- Action item extraction via NLP pipelines
+- Action item extraction via Generative AI
 
 ---
 
