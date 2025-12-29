@@ -93,6 +93,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
                   id="email"
                   placeholder="name@example.com"
                   {...register("email")}
+                  defaultValue="test@1.com"
                 />
                 {errors.email && (
                   <p className="text-xs text-red-500">{errors.email.message}</p>
@@ -105,6 +106,7 @@ const LoginForm = ({ setAuthTab }: LoginFormProps) => {
                   placeholder="********"
                   type="password"
                   {...register("password")}
+                  defaultValue="12345"
                 />
                 {errors.password && (
                   <p className="text-xs text-red-500">

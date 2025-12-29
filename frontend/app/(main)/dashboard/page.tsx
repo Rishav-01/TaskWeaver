@@ -12,6 +12,7 @@ import {
   Clock,
   Plus,
   TrendingUp,
+  Upload,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DashboardLoading from "./loading";
@@ -37,8 +38,8 @@ export default function DashboardPage() {
           </p>
         </div>
         <Button onClick={() => navigate.push("/meetings/upload")}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Meeting
+          <Upload className="mr-2 h-4 w-4" />
+          Upload Meeting
         </Button>
       </div>
 
