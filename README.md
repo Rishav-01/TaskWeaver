@@ -52,7 +52,7 @@ Built using **Next.js, FastAPI, LangChain, and MongoDB**, TaskWeaver is designed
 ### Backend
 - **FastAPI (Python)**
 - **LangChain / LangGraph**
-- MongoDB (PyMongo / Motor)
+- MongoDB (PyMongo)
 - JWT Authentication
 - RESTful API architecture
 
