@@ -29,6 +29,7 @@ import {
   Users,
   FileText,
   MoreHorizontal,
+  Upload,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -69,8 +70,8 @@ export default function MeetingsPage() {
         </div>
         <Button asChild>
           <Link href="/meetings/upload">
-            <Plus className="mr-2 h-4 w-4" />
-            New Meeting
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Meeting
           </Link>
         </Button>
       </div>
