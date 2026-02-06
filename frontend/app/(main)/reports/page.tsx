@@ -114,7 +114,9 @@ const actionItemsStatus = [
 ];
 
 export default function ReportsPage() {
-  const [timeRange, setTimeRange] = useState<string>("month");
+  const [timeRange, setTimeRange] = useState<
+    "month" | "week" | "quarter" | "year"
+  >("month");
   const { meetingReport, getMeetingReport, isLoadingMeetingReport } =
     useMeetingContext();
 
@@ -160,15 +162,15 @@ export default function ReportsPage() {
 
       const completedPercentage = calculatePercentage(
         completedValue,
-        totalActionItems
+        totalActionItems,
       );
       const inProgressPercentage = calculatePercentage(
         inProgressValue,
-        totalActionItems
+        totalActionItems,
       );
       const pendingPercentage = calculatePercentage(
         pendingValue,
-        totalActionItems
+        totalActionItems,
       );
 
       let startTimestamp: number | null = null;
@@ -184,13 +186,13 @@ export default function ReportsPage() {
         setAnimatedPendingCount(Math.floor(easeProgress * pendingValue));
 
         setActionItemsCompletedPercentage(
-          Math.floor(easeProgress * completedPercentage)
+          Math.floor(easeProgress * completedPercentage),
         );
         setActionItemsInProgressPercentage(
-          Math.floor(easeProgress * inProgressPercentage)
+          Math.floor(easeProgress * inProgressPercentage),
         );
         setActionItemsPendingPercentage(
-          Math.floor(easeProgress * pendingPercentage)
+          Math.floor(easeProgress * pendingPercentage),
         );
 
         if (progress < 1) {
@@ -208,6 +210,21 @@ export default function ReportsPage() {
       requestAnimationFrame(animate);
     }
   }, [meetingReport]);
+
+  const mapTimeRangeToLabel = (range: string) => {
+    switch (range) {
+      case "week":
+        return "weekly";
+      case "month":
+        return "monthly";
+      case "quarter":
+        return "quarterly";
+      case "year":
+        return "yearly";
+      default:
+        return "";
+    }
+  };
 
   if (!meetingReport) {
     return null;
@@ -227,7 +244,12 @@ export default function ReportsPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select
+            value={timeRange}
+            onValueChange={(value) =>
+              setTimeRange(value as "month" | "week" | "quarter" | "year")
+            }
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
@@ -432,7 +454,12 @@ export default function ReportsPage() {
         {/* Action Items Status */}
         <Card className="w-[50%]">
           <CardHeader>
-            <CardTitle>Action Items Breakdown</CardTitle>
+            <CardTitle>
+              Action Items Breakdown{" "}
+              <span className="ml-2 text-xs">
+                ({mapTimeRangeToLabel(timeRange)})
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
